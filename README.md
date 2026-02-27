@@ -45,7 +45,7 @@ http://admin:Admin123@wem-sg/ajax/CanApiJson.json
 
 ## Sensors
 
-The integration provides **73 sensors** across these device groups:
+The integration provides **50 sensors** across these device groups:
 
 ### Systemgerät (SG) — Modbus 100-155
 - Betriebsart HK1 (Vorgabe / aktuell)
@@ -67,13 +67,6 @@ The integration provides **73 sensors** across these device groups:
 - Volumenstrom VPT, Anlagendruck
 - Wärmeleistung VPT
 - Tageswärmemenge Vortag (Gesamt / Heizen / Warmwasser)
-
-### Heizkreis (HK / EM-HK) — Modbus 1030-1046
-- Same parameters as SG heating circuit but for the EM-HK module
-
-### Solar (SOL / EM-Sol) — Modbus 20-27
-- Kollektortemperatur, Speichertemperatur unten
-- Solarertrag (Gesamtzähler / heute / Vortag)
 
 ## Protocol
 
