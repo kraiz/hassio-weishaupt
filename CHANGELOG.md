@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.7 - 2026-02-27
+
+- Reverted the parent device change from 0.0.5.
+
 ## 0.0.6 - 2026-02-27
 
 - Release: prepare and publish v0.0.6 (bugfixes and registry fixes).
