@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from typing import Any
+from datetime import datetime
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
@@ -90,6 +91,8 @@ class WeishauptSensorEntity(
             from homeassistant.helpers.entity import EntityCategory
 
             self._attr_entity_category = EntityCategory.DIAGNOSTIC
+            # Disable diagnostic sensors by default in the entity registry
+            self._attr_entity_registry_enabled_default = False
         elif sensor_def.entity_category == "config":
             from homeassistant.helpers.entity import EntityCategory
 
@@ -126,6 +129,40 @@ class WeishauptSensorEntity(
         """Return the sensor value."""
         if self.coordinator.data is None:
             return None
+        # Special handling for the consolidated device time sensor
+        if self._sensor_def.key == "sg_device_time":
+            required_keys = [
+                "sg_uhrzeit_stunden",
+                "sg_uhrzeit_minuten",
+                "sg_datum_tag",
+                "sg_datum_monat",
+                "sg_datum_jahr",
+            ]
+            vals: dict[str, int] = {}
+            for k in required_keys:
+                d = self.coordinator.data.get(k)
+                if not d:
+                    return None
+                vals[k] = d.get("value_int", 0)
+
+            # Year register is typically two-digit; normalize to full year
+            year = vals.get("sg_datum_jahr", 0)
+            if year < 100:
+                year += 2000
+
+            try:
+                dt = datetime(
+                    year,
+                    vals.get("sg_datum_monat", 1),
+                    vals.get("sg_datum_tag", 1),
+                    vals.get("sg_uhrzeit_stunden", 0),
+                    vals.get("sg_uhrzeit_minuten", 0),
+                )
+            except Exception:
+                return None
+
+            # Return ISO 8601 string (Home Assistant expects timestamp strings)
+            return dt.isoformat()
 
         data = self.coordinator.data.get(self._sensor_def.key)
         if data is None:
