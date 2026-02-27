@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3 - 2026-02-27
+
+- Feature: Added logo.
+
 ## 0.1.2 - 2026-02-27
 
 - Fix: sensor amount in README.md was outdated after removing HK and SOL device groups. Updated to reflect current sensor count (50).
