@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.2 - 2026-02-27
+
+- Fix: sensor amount in README.md was outdated after removing HK and SOL device groups. Updated to reflect current sensor count (50).
+- Fix: update manifest version to 0.1.2 for latest release.
+
+## 0.1.1 - 2026-02-27
+
+- Breaking: Drop `HK_SENSORS` and `SOL_SENSORS` from the integration (these device groups will no longer be registered by default). This reduces entity count and focuses the integration on `SG` and `WTC` device groups.
+
 ## 0.0.8 - 2026-02-27
 
 - Release: prepare and publish v0.0.8 (includes latest fixes).
@@ -16,9 +25,6 @@
 
 - Fix: create parent device so `via_device` references are valid and avoid registry warnings.
 
-## 0.1.0 - 2026-02-27
-
-- Breaking: Drop `HK_SENSORS` and `SOL_SENSORS` from the integration (these device groups will no longer be registered by default). This reduces entity count and focuses the integration on `SG` and `WTC` device groups.
 
 ## 0.0.4 - 2026-02-27
 
