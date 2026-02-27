@@ -8,6 +8,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.device_registry import async_get as async_get_dev_reg
 
 from .api import WeishauptApiClient
 from .const import CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, DOMAIN
@@ -43,6 +44,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = coordinator
+
+    # Ensure a parent device exists so child devices can reference it via `via_device`.
+    dev_reg = async_get_dev_reg(hass)
+    device_name = f"Weishaupt {entry.title}" if entry.title else "Weishaupt Systemgerät"
+    dev_reg.async_get_or_create(
+        config_entry_id=entry.entry_id,
+        identifiers={(DOMAIN, entry.entry_id)},
+        manufacturer="Weishaupt",
+        name=device_name,
+        model="WEM-Systemgerät",
+    )
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
