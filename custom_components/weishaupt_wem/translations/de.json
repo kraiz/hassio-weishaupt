@@ -1,0 +1,24 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Weishaupt WEM Einrichtung",
+                "description": "Verbindung zum Weishaupt Systemgerät (SG) über die CanApiJson-Schnittstelle herstellen.",
+                "data": {
+                    "host": "Host / IP-Adresse",
+                    "username": "Benutzername",
+                    "password": "Passwort",
+                    "scan_interval": "Abfrageintervall (Sekunden)"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Verbindung zum Weishaupt-Gerät fehlgeschlagen. Prüfen Sie die IP-Adresse und das Netzwerk.",
+            "invalid_auth": "Authentifizierung fehlgeschlagen. Prüfen Sie Benutzername und Passwort (Standard: admin / Admin123).",
+            "unknown": "Ein unerwarteter Fehler ist aufgetreten."
+        },
+        "abort": {
+            "already_configured": "Dieses Gerät ist bereits konfiguriert."
+        }
+    }
+}

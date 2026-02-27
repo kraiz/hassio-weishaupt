@@ -1,0 +1,24 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Weishaupt WEM Setup",
+                "description": "Connect to your Weishaupt Systemgerät (SG) via the CanApiJson interface.",
+                "data": {
+                    "host": "Host / IP address",
+                    "username": "Username",
+                    "password": "Password",
+                    "scan_interval": "Scan interval (seconds)"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Failed to connect to the Weishaupt device. Check the IP address and network.",
+            "invalid_auth": "Authentication failed. Check username and password (default: admin / Admin123).",
+            "unknown": "An unexpected error occurred."
+        },
+        "abort": {
+            "already_configured": "This device is already configured."
+        }
+    }
+}
