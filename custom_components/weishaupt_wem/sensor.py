@@ -129,6 +129,7 @@ class WeishauptSensorEntity(
         """Return the sensor value."""
         if self.coordinator.data is None:
             return None
+        sensor_def = self._sensor_def
         # Special handling for the consolidated device time sensor
         if self._sensor_def.key == "sg_device_time":
             required_keys = [
@@ -176,7 +177,7 @@ class WeishauptSensorEntity(
             return None
         if sensor_def.vs == 4 and raw_value in (0x80000000, 0xFFFFFFFF):
             return None
-        sensor_def = self._sensor_def
+        # sensor_def already set above
 
         # Handle signed values
         if sensor_def.signed and sensor_def.vs == 2:
