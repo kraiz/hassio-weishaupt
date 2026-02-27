@@ -1,4 +1,4 @@
-"""Config flow for Weishaupt WEM integration."""
+"""Config flow for Weishaupt WTC integration."""
 
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 
 
 class WeishauptWemConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for Weishaupt WEM."""
+    """Handle a config flow for Weishaupt WTC."""
 
     VERSION = 1
 
@@ -81,7 +81,7 @@ class WeishauptWemConfigFlow(ConfigFlow, domain=DOMAIN):
 
             if not errors:
                 return self.async_create_entry(
-                    title=f"Weishaupt WEM ({host})",
+                    title=f"Weishaupt WTC ({host})",
                     data=user_input,
                 )
 

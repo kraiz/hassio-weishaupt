@@ -1,6 +1,6 @@
 {
-    "domain": "weishaupt_wem",
-    "name": "Weishaupt WEM",
+    "domain": "weishaupt_wtc",
+    "name": "Weishaupt WTC",
     "codeowners": [],
     "config_flow": true,
     "dependencies": [],

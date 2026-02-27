@@ -1,4 +1,4 @@
-"""Sensor platform for Weishaupt WEM integration."""
+"""Sensor platform for Weishaupt WTC integration."""
 
 from __future__ import annotations
 
@@ -45,7 +45,7 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Weishaupt WEM sensors from a config entry."""
+    """Set up Weishaupt WTC sensors from a config entry."""
     coordinator: WeishauptDataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
 
     entities: list[WeishauptSensorEntity] = []
@@ -64,7 +64,7 @@ async def async_setup_entry(
 class WeishauptSensorEntity(
     CoordinatorEntity[WeishauptDataUpdateCoordinator], SensorEntity
 ):
-    """Representation of a Weishaupt WEM sensor."""
+    """Representation of a Weishaupt WTC sensor."""
 
     _attr_has_entity_name = True
 

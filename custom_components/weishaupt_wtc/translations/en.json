@@ -2,7 +2,7 @@
     "config": {
         "step": {
             "user": {
-                "title": "Weishaupt WEM Setup",
+                "title": "Weishaupt WTC Setup",
                 "description": "Connect to your Weishaupt Systemgerät (SG) via the CanApiJson interface.",
                 "data": {
                     "host": "Host / IP address",

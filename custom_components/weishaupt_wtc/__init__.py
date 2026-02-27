@@ -1,4 +1,4 @@
-"""The Weishaupt WEM integration."""
+"""The Weishaupt WTC integration."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ PLATFORMS: list[Platform] = [Platform.SENSOR]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up Weishaupt WEM from a config entry."""
+    """Set up Weishaupt WTC from a config entry."""
     host = entry.data[CONF_HOST]
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]

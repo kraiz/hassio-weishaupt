@@ -1,4 +1,4 @@
-"""API client for Weishaupt WEM CanApiJson protocol."""
+"""API client for Weishaupt WTC CanApiJson protocol."""
 
 from __future__ import annotations
 
@@ -74,7 +74,7 @@ def parse_vg_response(vg: str) -> dict[str, Any]:
 
 
 class WeishauptApiClient:
-    """Client to interact with Weishaupt WEM CanApiJson API."""
+    """Client to interact with Weishaupt WTC CanApiJson API."""
 
     def __init__(
         self,

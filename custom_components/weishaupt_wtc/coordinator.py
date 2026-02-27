@@ -1,4 +1,4 @@
-"""DataUpdateCoordinator for Weishaupt WEM."""
+"""DataUpdateCoordinator for Weishaupt WTC."""
 
 from __future__ import annotations
 

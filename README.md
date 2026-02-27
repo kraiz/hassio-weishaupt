@@ -1,12 +1,12 @@
-# Weishaupt WEM - Home Assistant Integration
+# Weishaupt WTC - Home Assistant Integration
 
 Custom Home Assistant integration for Weishaupt heating systems using the **CanApiJson** protocol (JSON over HTTP).
 
-This integration communicates directly with the **Weishaupt Systemgerät (SG)** / WEM control unit via the local network — no cloud required.
+This integration communicates directly with the **Weishaupt Systemgerät (SG)** unit via the local network — no cloud required.
 
 ## Supported Hardware
 
-- **Weishaupt WEM-Systemgerät 2.5 / 2.6** (48301122172, 48301122242, 48301122512, 48301122522)
+- **Weishaupt Systemgerät 2.5 / 2.6** (48301122172, 48301122242, 48301122512, 48301122522)
 - Any Weishaupt heating system controlled through the Systemgerät (gas boilers, heat pumps, etc.)
 
 ## Prerequisites
@@ -28,18 +28,18 @@ http://admin:Admin123@wem-sg/ajax/CanApiJson.json
 1. Open HACS in Home Assistant
 2. Go to Integrations → ⋮ (top right) → Custom repositories
 3. Add this repository URL and select "Integration" as category
-4. Install "Weishaupt WEM"
+4. Install "Weishaupt WTC"
 5. Restart Home Assistant
 
 ### Manual
 
-1. Copy the `custom_components/weishaupt_wem` folder to your Home Assistant `config/custom_components/` directory
+1. Copy the `custom_components/weishaupt_wtc` folder to your Home Assistant `config/custom_components/` directory
 2. Restart Home Assistant
 
 ## Configuration
 
 1. Go to **Settings** → **Devices & Services** → **Add Integration**
-2. Search for "Weishaupt WEM"
+2. Search for "Weishaupt WTC"
 3. Enter the IP address (or hostname) of your Systemgerät
 4. Optionally adjust username, password, and scan interval
 

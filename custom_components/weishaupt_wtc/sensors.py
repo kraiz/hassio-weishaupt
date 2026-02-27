@@ -1,4 +1,4 @@
-"""Sensor definitions and register mappings for Weishaupt WEM.
+"""Sensor definitions and register mappings for Weishaupt WTC.
 
 Based on the Weishaupt CanApiJson protocol mapping table and
 Modbus TCP register documentation (manual-wem-modbustcp.pdf).
