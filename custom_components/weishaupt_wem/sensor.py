@@ -169,6 +169,13 @@ class WeishauptSensorEntity(
             return None
 
         raw_value = data["value_int"]
+
+        # Handle common sentinel values that indicate 'not available'
+        # 16-bit: 0x8000 or 0xFFFF, 32-bit: 0x80000000 or 0xFFFFFFFF
+        if sensor_def.vs == 2 and raw_value in (0x8000, 0xFFFF):
+            return None
+        if sensor_def.vs == 4 and raw_value in (0x80000000, 0xFFFFFFFF):
+            return None
         sensor_def = self._sensor_def
 
         # Handle signed values
