@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.1.4 - 2026-03-21
+## 1.2.0 - 2026-03-21
 
+- Feature: Re-add the documented HK and SOL sensor groups from the PDF register map, restoring Heizkreis and Solar entities.
 - Feature: Add the documented SG fault block diagnostics from Modbus 120-123 as disabled-by-default diagnostic sensors.
 - Fix: Restore the documented SG time/date component registers so the consolidated `sg_device_time` sensor is populated correctly.
 - Fix: Poll only real device frames and derive synthetic sensors from the fetched source frames.
