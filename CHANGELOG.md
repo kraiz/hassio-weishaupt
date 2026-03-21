@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 - 2026-03-21
+
+- Fix: Create the SG system device explicitly so child devices reference a valid `via_device` parent and avoid upcoming Home Assistant registry breakage.
+- Test: Add regression coverage for the SG root device and child device hierarchy.
+
 ## 0.2.0 - 2026-03-21
 
 - Feature: Re-add the documented HK and SOL sensor groups from the PDF register map, restoring Heizkreis and Solar entities.
