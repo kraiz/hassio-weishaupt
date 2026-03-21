@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.0 - 2026-03-21
+## 0.2.0 - 2026-03-21
 
 - Feature: Re-add the documented HK and SOL sensor groups from the PDF register map, restoring Heizkreis and Solar entities.
 - Feature: Add the documented SG fault block diagnostics from Modbus 120-123 as disabled-by-default diagnostic sensors.
