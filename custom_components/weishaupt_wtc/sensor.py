@@ -8,6 +8,7 @@ from typing import Any
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -46,6 +47,16 @@ DEVICE_GROUP_MODELS = {
 }
 
 
+def _device_identifier(entry_id: str, group: WeishauptDeviceGroup) -> tuple[str, str]:
+    """Return the device registry identifier for a Weishaupt group."""
+    return (DOMAIN, f"{entry_id}_{group.value}")
+
+
+def _system_device_identifier(entry_id: str) -> tuple[str, str]:
+    """Return the device registry identifier for the system device."""
+    return _device_identifier(entry_id, WeishauptDeviceGroup.SG)
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -53,6 +64,15 @@ async def async_setup_entry(
 ) -> None:
     """Set up Weishaupt WTC sensors from a config entry."""
     coordinator: WeishauptDataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
+
+    device_registry = dr.async_get(hass)
+    device_registry.async_get_or_create(
+        config_entry_id=entry.entry_id,
+        identifiers={_system_device_identifier(entry.entry_id)},
+        name="Weishaupt Systemgerät",
+        manufacturer="Weishaupt",
+        model=DEVICE_GROUP_MODELS[WeishauptDeviceGroup.SG],
+    )
 
     entities: list[WeishauptSensorEntity] = []
     for sensor_def in ALL_SENSORS:
@@ -108,13 +128,16 @@ class WeishauptSensorEntity(
     def device_info(self) -> DeviceInfo:
         """Return device info for this sensor."""
         group = self._sensor_def.group
-        return DeviceInfo(
-            identifiers={(DOMAIN, f"{self._entry.entry_id}_{group.value}")},
+        device_info = DeviceInfo(
+            identifiers={_device_identifier(self._entry.entry_id, group)},
             name=f"Weishaupt {DEVICE_GROUP_NAMES.get(group, group.value)}",
             manufacturer="Weishaupt",
             model=DEVICE_GROUP_MODELS.get(group, "Unknown"),
-            via_device=(DOMAIN, self._entry.entry_id),
         )
+        if group is not WeishauptDeviceGroup.SG:
+            device_info["via_device"] = _system_device_identifier(self._entry.entry_id)
+
+        return device_info
 
     @property
     def available(self) -> bool:
