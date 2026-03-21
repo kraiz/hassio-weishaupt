@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.4 - 2026-03-21
+
+- Feature: Add the documented SG fault block diagnostics from Modbus 120-123 as disabled-by-default diagnostic sensors.
+- Fix: Restore the documented SG time/date component registers so the consolidated `sg_device_time` sensor is populated correctly.
+- Fix: Poll only real device frames and derive synthetic sensors from the fetched source frames.
+- Fix: Guard against empty device responses and log a warning instead of failing with a `NoneType` error during coordinator refresh (#2).
+
 ## 0.1.3 - 2026-02-27
 
 - Feature: Added logo.

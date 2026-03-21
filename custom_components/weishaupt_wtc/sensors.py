@@ -58,6 +58,10 @@ class WeishauptSensorDefinition:
     value_map: dict[int, str] | None = None  # Map raw values to state strings
     entity_category: str | None = None  # "config" or "diagnostic"
     signed: bool = False  # Whether the value is a signed integer
+    poll: bool = True  # Whether this definition should be read from the device
+    source_key: str | None = None  # Another sensor key to derive the value from
+    byte_offset: int = 0  # Byte offset within the source value_hex for derived sensors
+    byte_length: int | None = None  # Number of bytes to read from the source value_hex
 
 
 # ============================================================================
@@ -464,7 +468,70 @@ SG_SENSORS: list[WeishauptSensorDefinition] = [
         scale=0.1,
         signed=True,
     ),
-    # Reg 120-123: Can Open spezifisch (8 bytes) — complex, skip for now
+    WeishauptSensorDefinition(
+        key="sg_canopen_fehlerblock",
+        name="CANopen Fehlerblock",
+        mi=0x01,
+        mx=0x00,
+        ox=0x263F,
+        os=0x00,
+        vs=8,
+        group=WeishauptDeviceGroup.SG,
+        modbus_reg="120-123",
+        icon="mdi:alert-box-outline",
+        entity_category="diagnostic",
+    ),
+    WeishauptSensorDefinition(
+        key="sg_fehler_warnung_status",
+        name="Fehler/Warnung Status",
+        mi=0x01,
+        mx=0x00,
+        ox=0x263F,
+        os=0x00,
+        vs=2,
+        group=WeishauptDeviceGroup.SG,
+        modbus_reg="121",
+        icon="mdi:alert-circle-outline",
+        entity_category="diagnostic",
+        poll=False,
+        source_key="sg_canopen_fehlerblock",
+        byte_offset=2,
+        byte_length=2,
+    ),
+    WeishauptSensorDefinition(
+        key="sg_fehlernummer",
+        name="Fehlernummer",
+        mi=0x01,
+        mx=0x00,
+        ox=0x263F,
+        os=0x00,
+        vs=2,
+        group=WeishauptDeviceGroup.SG,
+        modbus_reg="122",
+        icon="mdi:numeric",
+        entity_category="diagnostic",
+        poll=False,
+        source_key="sg_canopen_fehlerblock",
+        byte_offset=4,
+        byte_length=2,
+    ),
+    WeishauptSensorDefinition(
+        key="sg_fehler_modul",
+        name="Fehlermodul",
+        mi=0x01,
+        mx=0x00,
+        ox=0x263F,
+        os=0x00,
+        vs=2,
+        group=WeishauptDeviceGroup.SG,
+        modbus_reg="123",
+        icon="mdi:chip",
+        entity_category="diagnostic",
+        poll=False,
+        source_key="sg_canopen_fehlerblock",
+        byte_offset=6,
+        byte_length=2,
+    ),
     WeishauptSensorDefinition(
         key="sg_systembetriebsart",
         name="Systembetriebsart",
@@ -752,9 +819,71 @@ SG_SENSORS: list[WeishauptSensorDefinition] = [
         scale=0.1,
         signed=True,
     ),
-    # --- Fehler/Warnung (121-123) via Reg 120 complex ---
-    # Uhrzeit / Datum handled by consolidated sensor (`sg_device_time`)
-
+    WeishauptSensorDefinition(
+        key="sg_uhrzeit_stunden",
+        name="Uhrzeit Stunden",
+        mi=0x01,
+        mx=0x00,
+        ox=0x2562,
+        os=0x02,
+        vs=1,
+        group=WeishauptDeviceGroup.SG,
+        modbus_reg="150",
+        icon="mdi:clock-outline",
+        entity_category="diagnostic",
+    ),
+    WeishauptSensorDefinition(
+        key="sg_uhrzeit_minuten",
+        name="Uhrzeit Minuten",
+        mi=0x01,
+        mx=0x00,
+        ox=0x2562,
+        os=0x03,
+        vs=1,
+        group=WeishauptDeviceGroup.SG,
+        modbus_reg="151",
+        icon="mdi:clock-outline",
+        entity_category="diagnostic",
+    ),
+    WeishauptSensorDefinition(
+        key="sg_datum_tag",
+        name="Datum Tag",
+        mi=0x01,
+        mx=0x00,
+        ox=0x2563,
+        os=0x02,
+        vs=1,
+        group=WeishauptDeviceGroup.SG,
+        modbus_reg="153",
+        icon="mdi:calendar-today-outline",
+        entity_category="diagnostic",
+    ),
+    WeishauptSensorDefinition(
+        key="sg_datum_monat",
+        name="Datum Monat",
+        mi=0x01,
+        mx=0x00,
+        ox=0x2563,
+        os=0x03,
+        vs=1,
+        group=WeishauptDeviceGroup.SG,
+        modbus_reg="154",
+        icon="mdi:calendar-month-outline",
+        entity_category="diagnostic",
+    ),
+    WeishauptSensorDefinition(
+        key="sg_datum_jahr",
+        name="Datum Jahr",
+        mi=0x01,
+        mx=0x00,
+        ox=0x2563,
+        os=0x04,
+        vs=1,
+        group=WeishauptDeviceGroup.SG,
+        modbus_reg="155",
+        icon="mdi:calendar-range-outline",
+        entity_category="diagnostic",
+    ),
     # Consolidated device time sensor (combines the separate hour/minute/date registers)
     WeishauptSensorDefinition(
         key="sg_device_time",
@@ -768,6 +897,7 @@ SG_SENSORS: list[WeishauptSensorDefinition] = [
         modbus_reg="150-155",
         device_class=SensorDeviceClass.TIMESTAMP,
         entity_category="diagnostic",
+        poll=False,
     ),
 ]
 
@@ -966,6 +1096,8 @@ WTC_SENSORS: list[WeishauptSensorDefinition] = [
 # All sensor definitions combined
 # ============================================================================
 
-ALL_SENSORS: list[WeishauptSensorDefinition] = (
-    SG_SENSORS + WTC_SENSORS
-)
+ALL_SENSORS: list[WeishauptSensorDefinition] = SG_SENSORS + WTC_SENSORS
+
+POLLED_SENSORS: list[WeishauptSensorDefinition] = [
+    sensor for sensor in ALL_SENSORS if sensor.poll
+]

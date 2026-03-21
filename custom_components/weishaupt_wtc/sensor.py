@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import logging
 from typing import Any
-from datetime import datetime
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
@@ -15,6 +14,13 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
 from .coordinator import WeishauptDataUpdateCoordinator
+from .parsing import (
+    build_device_time_iso,
+    decode_fault_status,
+    decode_fault_status_attributes,
+    decode_module_attributes,
+    extract_value_segment,
+)
 from .sensors import ALL_SENSORS, WeishauptDeviceGroup, WeishauptSensorDefinition
 
 _LOGGER = logging.getLogger(__name__)
@@ -113,10 +119,25 @@ class WeishauptSensorEntity(
     @property
     def available(self) -> bool:
         """Return True if the sensor data is available."""
+        if self._sensor_def.key == "sg_device_time":
+            required_keys = [
+                "sg_uhrzeit_stunden",
+                "sg_uhrzeit_minuten",
+                "sg_datum_tag",
+                "sg_datum_monat",
+                "sg_datum_jahr",
+            ]
+            return (
+                super().available
+                and self.coordinator.data is not None
+                and all(key in self.coordinator.data for key in required_keys)
+            )
+
+        data_key = self._sensor_def.source_key or self._sensor_def.key
         return (
             super().available
             and self.coordinator.data is not None
-            and self._sensor_def.key in self.coordinator.data
+            and data_key in self.coordinator.data
         )
 
     @callback
@@ -129,9 +150,11 @@ class WeishauptSensorEntity(
         """Return the sensor value."""
         if self.coordinator.data is None:
             return None
+
         sensor_def = self._sensor_def
+
         # Special handling for the consolidated device time sensor
-        if self._sensor_def.key == "sg_device_time":
+        if sensor_def.key == "sg_device_time":
             required_keys = [
                 "sg_uhrzeit_stunden",
                 "sg_uhrzeit_minuten",
@@ -146,46 +169,43 @@ class WeishauptSensorEntity(
                     return None
                 vals[k] = d.get("value_int", 0)
 
-            # Year register is typically two-digit; normalize to full year
-            year = vals.get("sg_datum_jahr", 0)
-            if year < 100:
-                year += 2000
+            return build_device_time_iso(vals)
 
-            try:
-                dt = datetime(
-                    year,
-                    vals.get("sg_datum_monat", 1),
-                    vals.get("sg_datum_tag", 1),
-                    vals.get("sg_uhrzeit_stunden", 0),
-                    vals.get("sg_uhrzeit_minuten", 0),
-                )
-            except Exception:
-                return None
-
-            # Return ISO 8601 string (Home Assistant expects timestamp strings)
-            return dt.isoformat()
-
-        data = self.coordinator.data.get(self._sensor_def.key)
+        data_key = sensor_def.source_key or sensor_def.key
+        data = self.coordinator.data.get(data_key)
         if data is None:
             return None
 
         raw_value = data["value_int"]
+        value_size = sensor_def.byte_length or sensor_def.vs
+
+        if sensor_def.source_key is not None:
+            extracted = extract_value_segment(
+                data.get("value_hex", ""),
+                sensor_def.byte_offset,
+                value_size,
+            )
+            if extracted is None:
+                return None
+            _, raw_value = extracted
 
         # Handle common sentinel values that indicate 'not available'
         # 16-bit: 0x8000 or 0xFFFF, 32-bit: 0x80000000 or 0xFFFFFFFF
-        if sensor_def.vs == 2 and raw_value in (0x8000, 0xFFFF):
+        if value_size == 2 and raw_value in (0x8000, 0xFFFF):
             return None
-        if sensor_def.vs == 4 and raw_value in (0x80000000, 0xFFFFFFFF):
+        if value_size == 4 and raw_value in (0x80000000, 0xFFFFFFFF):
             return None
-        # sensor_def already set above
 
         # Handle signed values
-        if sensor_def.signed and sensor_def.vs == 2:
+        if sensor_def.signed and value_size == 2:
             if raw_value > 0x7FFF:
                 raw_value -= 0x10000
-        elif sensor_def.signed and sensor_def.vs == 4:
+        elif sensor_def.signed and value_size == 4:
             if raw_value > 0x7FFFFFFF:
                 raw_value -= 0x100000000
+
+        if sensor_def.key == "sg_fehler_warnung_status":
+            return decode_fault_status(raw_value)
 
         # If there's a value map, return the mapped string
         if sensor_def.value_map is not None:
@@ -205,9 +225,42 @@ class WeishauptSensorEntity(
             "device_group": self._sensor_def.group.value,
         }
 
-        if self.coordinator.data and self._sensor_def.key in self.coordinator.data:
-            data = self.coordinator.data[self._sensor_def.key]
-            attrs["raw_value_hex"] = data.get("value_hex", "")
-            attrs["raw_value_int"] = data.get("value_int", 0)
+        if self._sensor_def.source_key is not None:
+            attrs["source_sensor"] = self._sensor_def.source_key
+
+        if self.coordinator.data:
+            data_key = self._sensor_def.source_key or self._sensor_def.key
+            data = self.coordinator.data.get(data_key)
+            if data:
+                raw_value_hex = data.get("value_hex", "")
+                raw_value_int = data.get("value_int", 0)
+
+                if self._sensor_def.source_key is not None:
+                    extracted = extract_value_segment(
+                        raw_value_hex,
+                        self._sensor_def.byte_offset,
+                        self._sensor_def.byte_length or self._sensor_def.vs,
+                    )
+                    if extracted is not None:
+                        raw_value_hex, raw_value_int = extracted
+
+                attrs["raw_value_hex"] = raw_value_hex
+                attrs["raw_value_int"] = raw_value_int
+
+                if self._sensor_def.key == "sg_fehler_warnung_status":
+                    attrs.update(decode_fault_status_attributes(raw_value_int))
+                elif self._sensor_def.key == "sg_fehler_modul":
+                    attrs.update(decode_module_attributes(raw_value_int))
+                elif self._sensor_def.key == "sg_canopen_fehlerblock":
+                    status = extract_value_segment(raw_value_hex, 2, 2)
+                    number = extract_value_segment(raw_value_hex, 4, 2)
+                    module = extract_value_segment(raw_value_hex, 6, 2)
+                    if status is not None:
+                        attrs["fault_status"] = decode_fault_status(status[1])
+                        attrs.update(decode_fault_status_attributes(status[1]))
+                    if number is not None:
+                        attrs["fault_number"] = number[1]
+                    if module is not None:
+                        attrs.update(decode_module_attributes(module[1]))
 
         return attrs

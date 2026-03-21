@@ -11,7 +11,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .api import WeishauptApiClient, WeishauptApiError, WeishauptConnectionError
 from .const import DOMAIN
-from .sensors import ALL_SENSORS
+from .sensors import POLLED_SENSORS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class WeishauptDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from the Weishaupt device."""
         params = []
-        for sensor_def in ALL_SENSORS:
+        for sensor_def in POLLED_SENSORS:
             params.append(
                 {
                     "key": sensor_def.key,
