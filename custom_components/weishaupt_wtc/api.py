@@ -150,7 +150,7 @@ class WeishauptApiClient:
         }
         try:
             result = await self._post(payload)
-            return "CAPI" in result
+            return bool(result and "CAPI" in result)
         except WeishauptApiError:
             raise
         except Exception as err:
@@ -194,6 +194,10 @@ class WeishauptApiClient:
                 response = await self._post(payload)
             except WeishauptApiError as err:
                 _LOGGER.error("Failed to read batch: %s", err)
+                continue
+
+            if not response:
+                _LOGGER.warning("Empty response from device for payload: %s", payload)
                 continue
 
             if "CAPI" not in response:
