@@ -76,6 +76,10 @@ async def async_setup_entry(
 
     entities: list[WeishauptSensorEntity] = []
     for sensor_def in ALL_SENSORS:
+        # Skip creating the read-only sensor when a writable Select exists
+        if sensor_def.key == "sg_betriebsart_hk1_vorgabe":
+            continue
+
         entities.append(
             WeishauptSensorEntity(
                 coordinator=coordinator,
