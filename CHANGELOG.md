@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2 - 2026-03-30
+
+- Feature: Add writable Select for `sg_betriebsart_hk1_vorgabe` (Register 100) to allow changing Heizkreis 1 Betriebsart (#4).
+- Feature: Add API write support for CanApiJson SET frames so writable registers can be updated from HA.
+
 ## 0.2.1 - 2026-03-21
 
 - Fix: Create the SG system device explicitly so child devices reference a valid `via_device` parent and avoid upcoming Home Assistant registry breakage.

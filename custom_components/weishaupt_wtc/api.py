@@ -8,7 +8,7 @@ from typing import Any
 
 import aiohttp
 
-from .const import API_ENDPOINT, CMD_GET, CMD_RESPONSE, CMD_ERROR, SRC_DDC
+from .const import API_ENDPOINT, CMD_GET, CMD_SET, CMD_RESPONSE, CMD_ERROR, SRC_DDC
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -41,6 +41,13 @@ def build_read_vg(mi: int, mx: int, ox: int, os_val: int, vs: int) -> str:
     # For read, we pad with zeros for the value area
     padding = "00" * vs
     return f"{CMD_GET:02x}{mi:02x}{mx:02x}{ox:04x}{os_val:02x}{vs:04x}{padding}"
+
+
+def build_write_vg(
+    mi: int, mx: int, ox: int, os_val: int, vs: int, value_hex: str
+) -> str:
+    """Build a VG write request frame (CMD=0x03 SET) including value area."""
+    return f"{CMD_SET:02x}{mi:02x}{mx:02x}{ox:04x}{os_val:02x}{vs:04x}{value_hex}"
 
 
 def parse_vg_response(vg: str) -> dict[str, Any]:
@@ -239,3 +246,65 @@ class WeishauptApiClient:
                     results[param["key"]] = parsed
 
         return results
+
+    async def write_parameter(
+        self,
+        mi: int,
+        mx: int,
+        ox: int,
+        os_val: int,
+        vs: int,
+        value_int: int,
+    ) -> bool:
+        """Write a single parameter value to the device.
+
+        Returns True on success, False on failure.
+        """
+        # Encode value_int as big-endian hex with vs bytes
+        value_hex = f"{value_int:0{vs * 2}x}"
+        vg = build_write_vg(
+            mi=mi, mx=mx, ox=ox, os_val=os_val, vs=vs, value_hex=value_hex
+        )
+
+        payload = {
+            "ID": REQUEST_ID,
+            "SRC": SRC_DDC,
+            "CAPI": {"NN": 1, "N01": {"VG": vg}},
+        }
+
+        try:
+            response = await self._post(payload)
+        except WeishauptApiError as err:
+            _LOGGER.error("Failed to write parameter: %s", err)
+            raise
+
+        if not response:
+            _LOGGER.debug("Empty response from device for write payload: %s", payload)
+            return False
+
+        if "CAPI" not in response:
+            _LOGGER.debug("No CAPI in write response: %s", response)
+            return False
+
+        response_capi = response["CAPI"]
+        key = "N01"
+        if key not in response_capi:
+            _LOGGER.debug("Missing %s in write response", key)
+            return False
+
+        vg_str = response_capi[key].get("VG", "")
+        if not vg_str:
+            _LOGGER.debug("No VG in write response for %s", key)
+            return False
+
+        try:
+            parsed = parse_vg_response(vg_str)
+        except (ValueError, WeishauptApiError) as err:
+            _LOGGER.debug("Failed to parse VG write response: %s", err)
+            return False
+
+        if parsed["cmd"] == CMD_ERROR:
+            _LOGGER.debug("Error response for write VG: %s", vg_str)
+            return False
+
+        return True
