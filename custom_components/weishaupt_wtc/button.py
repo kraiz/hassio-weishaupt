@@ -1,14 +1,13 @@
-"""Select platform for Weishaupt WTC integration.
+"""Button platform for Weishaupt WTC integration.
 
-Exposes writable registers with value maps as dropdowns in Home Assistant.
+Exposes one-shot writable registers as press buttons in Home Assistant.
 """
 
 from __future__ import annotations
 
 import logging
-from typing import Any
 
-from homeassistant.components.select import SelectEntity
+from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -21,22 +20,23 @@ from .sensors import ALL_SENSORS, WeishauptDeviceGroup, WeishauptSensorDefinitio
 
 _LOGGER = logging.getLogger(__name__)
 
+# Keys that are exposed as buttons rather than sensors
+BUTTON_KEYS = {"sg_warmwasser_push"}
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Weishaupt Select entities from a config entry."""
+    """Set up Weishaupt Button entities from a config entry."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
 
-    entities: list[WeishauptSelectEntity] = []
-
-    # Implement writable select for the specific register key
+    entities: list[WeishauptButtonEntity] = []
     for sensor_def in ALL_SENSORS:
-        if sensor_def.key == "sg_betriebsart_hk1_vorgabe":
+        if sensor_def.key in BUTTON_KEYS:
             entities.append(
-                WeishauptSelectEntity(
+                WeishauptButtonEntity(
                     coordinator=coordinator, sensor_def=sensor_def, entry=entry
                 )
             )
@@ -44,8 +44,8 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class WeishauptSelectEntity(CoordinatorEntity, SelectEntity):
-    """Representation of a writable Weishaupt value-map as a Select."""
+class WeishauptButtonEntity(CoordinatorEntity, ButtonEntity):
+    """Representation of a one-shot Weishaupt writable register as a Button."""
 
     _attr_has_entity_name = True
 
@@ -74,47 +74,13 @@ class WeishauptSelectEntity(CoordinatorEntity, SelectEntity):
             model=DEVICE_GROUP_MODELS.get(group, "Unknown"),
         )
         if group is not WeishauptDeviceGroup.SG:
-            info["via_device"] = _device_identifier(self._entry.entry_id, WeishauptDeviceGroup.SG)
+            info["via_device"] = _device_identifier(
+                self._entry.entry_id, WeishauptDeviceGroup.SG
+            )
         return info
 
-    @property
-    def options(self) -> list[str]:
-        """Return available options for the select (ordered by raw value)."""
-        if not self._sensor_def.value_map:
-            return []
-        return [
-            self._sensor_def.value_map[k]
-            for k in sorted(self._sensor_def.value_map.keys())
-        ]
-
-    @property
-    def current_option(self) -> str | None:
-        """Return currently selected option string, or None if unknown."""
-        if self.coordinator.data is None:
-            return None
-
-        data = self.coordinator.data.get(self._sensor_def.key)
-        if not data:
-            return None
-
-        raw = data.get("value_int")
-        if raw is None:
-            return None
-
-        return self._sensor_def.value_map.get(raw)
-
-    async def async_select_option(self, option: Any) -> None:  # type: ignore[override]
-        """Write the chosen option back to the device and refresh data."""
-        # Find raw integer matching the selected option
-        inv_map = {v: k for k, v in (self._sensor_def.value_map or {}).items()}
-        if option not in inv_map:
-            _LOGGER.error(
-                "Invalid option selected for %s: %s", self._sensor_def.key, option
-            )
-            return
-
-        raw_value = inv_map[option]
-
+    async def async_press(self) -> None:
+        """Trigger the warm-water push by writing 1 to the register."""
         try:
             success = await self.coordinator.client.write_parameter(
                 mi=self._sensor_def.mi,
@@ -122,16 +88,15 @@ class WeishauptSelectEntity(CoordinatorEntity, SelectEntity):
                 ox=self._sensor_def.ox,
                 os_val=self._sensor_def.os,
                 vs=self._sensor_def.vs,
-                value_int=raw_value,
+                value_int=1,
             )
-        except Exception as err:  # catch client errors
+        except Exception as err:
             _LOGGER.error(
-                "Failed to write %s=%s: %s", self._sensor_def.key, option, err
+                "Failed to trigger %s: %s", self._sensor_def.key, err
             )
             return
 
         if success:
-            # Refresh coordinator data to reflect the new state
             await self.coordinator.async_request_refresh()
         else:
             _LOGGER.debug("Write reported unsuccessful for %s", self._sensor_def.key)

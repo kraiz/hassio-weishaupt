@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.3 - 2026-04-04
+
+- Fix: Add missing `device_info` to `WeishauptSelectEntity` so the Select is visible in the HA device view.
+- Feature: Add Button platform with `Warmwasser-Push` button (Register 131) that writes value 1 to trigger a domestic hot water push cycle.
+
 ## 0.2.2 - 2026-03-30
 
 - Feature: Add writable Select for `sg_betriebsart_hk1_vorgabe` (Register 100) to allow changing Heizkreis 1 Betriebsart (#4).
