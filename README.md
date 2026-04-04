@@ -4,6 +4,16 @@ Custom Home Assistant integration for Weishaupt heating systems using the **CanA
 
 This integration communicates directly with the **Weishaupt Systemgerät (SG)** unit via the local network — no cloud required.
 
+## Disclaimer
+
+**Use at your own risk.**
+
+This is an independent, community-developed integration with no affiliation to Weishaupt GmbH. Starting from v0.2.2 this integration can **write values to your heating device** — changing operating modes, triggering hot water cycles, and potentially other parameters.
+
+While every effort is made to ensure correct and safe behaviour, the authors and contributors accept **no responsibility or liability** for any damage, malfunction, data loss, voided warranty, or any other consequence arising from the use of this integration. This includes but is not limited to unintended changes to device state, loss of heating or hot water, or damage to hardware.
+
+**Always verify that any change made through this integration behaves as expected on your specific installation.**
+
 ## Supported Hardware
 
 - **Weishaupt Systemgerät 2.5 / 2.6** (48301122172, 48301122242, 48301122512, 48301122522)
