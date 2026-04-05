@@ -121,8 +121,11 @@ class WeishauptSensorEntity(
             from homeassistant.helpers.entity import EntityCategory
 
             self._attr_entity_category = EntityCategory.DIAGNOSTIC
-            # Disable diagnostic sensors by default in the entity registry
-            self._attr_entity_registry_enabled_default = False
+            if sensor_def.entity_registry_enabled_default is not None:
+                self._attr_entity_registry_enabled_default = sensor_def.entity_registry_enabled_default
+            else:
+                # Disable diagnostic sensors by default in the entity registry
+                self._attr_entity_registry_enabled_default = False
         elif sensor_def.entity_category == "config":
             from homeassistant.helpers.entity import EntityCategory
 

@@ -62,6 +62,7 @@ class WeishauptSensorDefinition:
     source_key: str | None = None  # Another sensor key to derive the value from
     byte_offset: int = 0  # Byte offset within the source value_hex for derived sensors
     byte_length: int | None = None  # Number of bytes to read from the source value_hex
+    entity_registry_enabled_default: bool | None = None  # Override default enabled state; None = use category default
 
 
 # ============================================================================
@@ -480,6 +481,7 @@ SG_SENSORS: list[WeishauptSensorDefinition] = [
         modbus_reg="120-123",
         icon="mdi:alert-box-outline",
         entity_category="diagnostic",
+        entity_registry_enabled_default=False,
     ),
     WeishauptSensorDefinition(
         key="sg_fehler_warnung_status",
@@ -497,6 +499,7 @@ SG_SENSORS: list[WeishauptSensorDefinition] = [
         source_key="sg_canopen_fehlerblock",
         byte_offset=2,
         byte_length=2,
+        entity_registry_enabled_default=True,
     ),
     WeishauptSensorDefinition(
         key="sg_fehlernummer",
@@ -514,6 +517,7 @@ SG_SENSORS: list[WeishauptSensorDefinition] = [
         source_key="sg_canopen_fehlerblock",
         byte_offset=4,
         byte_length=2,
+        entity_registry_enabled_default=True,
     ),
     WeishauptSensorDefinition(
         key="sg_fehler_modul",
@@ -531,6 +535,7 @@ SG_SENSORS: list[WeishauptSensorDefinition] = [
         source_key="sg_canopen_fehlerblock",
         byte_offset=6,
         byte_length=2,
+        entity_registry_enabled_default=True,
     ),
     WeishauptSensorDefinition(
         key="sg_systembetriebsart",
