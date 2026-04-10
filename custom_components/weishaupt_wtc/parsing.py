@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Mapping, Any
 
 
@@ -66,6 +66,7 @@ def build_device_time_iso(values: Mapping[str, int]) -> str | None:
             values.get("sg_datum_tag", 1),
             values.get("sg_uhrzeit_stunden", 0),
             values.get("sg_uhrzeit_minuten", 0),
+            tzinfo=timezone.utc,
         )
     except ValueError:
         return None
