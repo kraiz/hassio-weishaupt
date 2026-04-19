@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.5 - 2026-04-19
+
+- Fix: Make device timestamp timezone-aware (UTC) to fix auto-update of sensor values (#5, thanks @wagnerpizza).
+
 ## 0.2.3 - 2026-04-04
 
 - Fix: Add missing `device_info` to `WeishauptSelectEntity` so the Select is visible in the HA device view.
