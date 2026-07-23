@@ -20,5 +20,247 @@
         "abort": {
             "already_configured": "Dieses Gerät ist bereits konfiguriert."
         }
+    },
+    "entity": {
+        "select": {
+            "sg_betriebsart_hk1_vorgabe": {
+                "name": "Betriebsart HK1 Vorgabe"
+            }
+        },
+        "sensor": {
+            "sg_sowi_umschaltung_hk1": {
+                "name": "So/Wi Umschaltung HK1"
+            },
+            "sg_betriebsart_hk1_aktuell": {
+                "name": "Betriebsart HK1 aktuell"
+            },
+            "sg_status_hk1": {
+                "name": "Status HK1"
+            },
+            "sg_raumsolltemperatur_komfort": {
+                "name": "Raumsolltemperatur Komfort"
+            },
+            "sg_raumsolltemperatur_normal": {
+                "name": "Raumsolltemperatur Normal"
+            },
+            "sg_raumsolltemperatur_absenk": {
+                "name": "Raumsolltemperatur Absenk"
+            },
+            "sg_raumsolltemperatur_aktuell": {
+                "name": "Raumsolltemperatur aktuell"
+            },
+            "sg_vorlaufsolltemperatur_komfort": {
+                "name": "Vorlaufsolltemperatur Komfort"
+            },
+            "sg_vorlaufsolltemperatur_normal": {
+                "name": "Vorlaufsolltemperatur Normal"
+            },
+            "sg_vorlaufsolltemperatur_absenk": {
+                "name": "Vorlaufsolltemperatur Absenk"
+            },
+            "sg_vorlaufsolltemperatur_sonderniveau": {
+                "name": "Vorlaufsolltemperatur Sonderniveau"
+            },
+            "sg_n1_vorgabe_ethernet": {
+                "name": "N1-Vorgabe über Ethernet"
+            },
+            "sg_vorlaufsolltemperatur_aktuell": {
+                "name": "Vorlaufsolltemperatur aktuell"
+            },
+            "sg_vorlaufisttemperatur": {
+                "name": "Vorlaufisttemperatur"
+            },
+            "sg_plattenwaermetauschertemperatur_b2": {
+                "name": "Plattenwärmetauschertemperatur (B2)"
+            },
+            "sg_pufferspeicher_temperatur_oben": {
+                "name": "Pufferspeicher Temperatur oben"
+            },
+            "sg_pufferspeicher_temperatur_unten": {
+                "name": "Pufferspeicher Temperatur unten"
+            },
+            "sg_canopen_fehlerblock": {
+                "name": "CANopen Fehlerblock"
+            },
+            "sg_fehler_warnung_status": {
+                "name": "Fehler/Warnung Status"
+            },
+            "sg_fehlernummer": {
+                "name": "Fehlernummer"
+            },
+            "sg_fehler_modul": {
+                "name": "Fehlermodul"
+            },
+            "sg_systembetriebsart": {
+                "name": "Systembetriebsart"
+            },
+            "sg_aussentemperatur": {
+                "name": "Außentemperatur"
+            },
+            "sg_waermeanforderung_heizung": {
+                "name": "Wärmeanforderung Heizung"
+            },
+            "sg_waermeanforderung_warmwasser": {
+                "name": "Wärmeanforderung Warmwasser"
+            },
+            "sg_status_warmwasser": {
+                "name": "Status Warmwasser"
+            },
+            "sg_wwsolltemperatur_normal": {
+                "name": "WW-Solltemperatur Normal"
+            },
+            "sg_wwsolltemperatur_absenk": {
+                "name": "WW-Solltemperatur Absenk"
+            },
+            "sg_wwsolltemperatur_aktuell": {
+                "name": "WW-Solltemperatur aktuell"
+            },
+            "sg_warmwassertemperatur": {
+                "name": "Warmwassertemperatur"
+            },
+            "sg_ruecklauftemperatur_zirkulation": {
+                "name": "Rücklauftemperatur Zirkulation"
+            },
+            "sg_pumpe_warmwasser": {
+                "name": "Pumpe Warmwasser"
+            },
+            "sg_folgewechsel": {
+                "name": "Folgewechsel"
+            },
+            "sg_wechselzeit": {
+                "name": "Wechselzeit"
+            },
+            "sg_kaskade_abgleichtemperatur": {
+                "name": "Kaskade Abgleichtemperatur"
+            },
+            "sg_kaskade_sollmodulation_hz": {
+                "name": "Kaskade Soll-Modulation HZ"
+            },
+            "sg_kaskade_sollmodulation_ww": {
+                "name": "Kaskade Soll-Modulation WW"
+            },
+            "sg_kaskade_sollwert_hz": {
+                "name": "Kaskade Sollwert HZ"
+            },
+            "sg_kaskade_sollwert_ww": {
+                "name": "Kaskade Sollwert WW"
+            },
+            "sg_uhrzeit_stunden": {
+                "name": "Uhrzeit Stunden"
+            },
+            "sg_uhrzeit_minuten": {
+                "name": "Uhrzeit Minuten"
+            },
+            "sg_datum_tag": {
+                "name": "Datum Tag"
+            },
+            "sg_datum_monat": {
+                "name": "Datum Monat"
+            },
+            "sg_datum_jahr": {
+                "name": "Datum Jahr"
+            },
+            "sg_device_time": {
+                "name": "Uhrzeit / Datum"
+            },
+            "wtc_betriebsphase": {
+                "name": "Betriebsphase WTC"
+            },
+            "wtc_betriebsphase_brenner": {
+                "name": "Betriebsphase Brenner"
+            },
+            "wtc_vorlaufsolltemperatur": {
+                "name": "WTC Vorlaufsolltemperatur"
+            },
+            "wtc_kesseltemperatur": {
+                "name": "Kesseltemperatur"
+            },
+            "wtc_volumenstrom_vpt": {
+                "name": "Volumenstrom VPT"
+            },
+            "wtc_anlagendruck": {
+                "name": "Anlagendruck"
+            },
+            "wtc_abgastemperatur": {
+                "name": "WTC Abgastemperatur"
+            },
+            "wtc_ruecklauftemperatur": {
+                "name": "WTC Rücklauftemperatur"
+            },
+            "wtc_waermeleistung_vpt": {
+                "name": "Wärmeleistung VPT"
+            },
+            "wtc_tageswaermemenge_vortag_gesamt": {
+                "name": "Tageswärmemenge Vortag Gesamt"
+            },
+            "wtc_tageswaermemenge_vortag_heizen": {
+                "name": "Tageswärmemenge Vortag Heizbetrieb"
+            },
+            "wtc_tageswaermemenge_vortag_ww": {
+                "name": "Tageswärmemenge Vortag Warmwasser"
+            },
+            "hk_betriebsart_vorgabe": {
+                "name": "HK Betriebsart Vorgabe"
+            },
+            "hk_sowi_umschaltung": {
+                "name": "HK So/Wi Umschaltung"
+            },
+            "hk_betriebsart_aktuell": {
+                "name": "HK Betriebsart aktuell"
+            },
+            "hk_status": {
+                "name": "HK Status"
+            },
+            "hk_raumsolltemperatur_komfort": {
+                "name": "HK Raumsolltemperatur Komfort"
+            },
+            "hk_raumsolltemperatur_normal": {
+                "name": "HK Raumsolltemperatur Normal"
+            },
+            "hk_raumsolltemperatur_absenk": {
+                "name": "HK Raumsolltemperatur Absenk"
+            },
+            "hk_raumsolltemperatur_aktuell": {
+                "name": "HK Raumsolltemperatur aktuell"
+            },
+            "hk_vorlaufsolltemperatur_komfort": {
+                "name": "HK Vorlaufsolltemperatur Komfort"
+            },
+            "hk_vorlaufsolltemperatur_normal": {
+                "name": "HK Vorlaufsolltemperatur Normal"
+            },
+            "hk_vorlaufsolltemperatur_absenk": {
+                "name": "HK Vorlaufsolltemperatur Absenk"
+            },
+            "hk_vorlaufsolltemperatur_sonderniveau": {
+                "name": "HK Vorlaufsolltemperatur Sonderniveau"
+            },
+            "hk_vorlaufsolltemperatur_aktuell": {
+                "name": "HK Vorlaufsolltemperatur aktuell"
+            },
+            "hk_vorlaufisttemperatur": {
+                "name": "HK Vorlaufisttemperatur"
+            },
+            "sol_kollektortemperatur": {
+                "name": "Kollektortemperatur"
+            },
+            "sol_speichertemperatur_unten": {
+                "name": "Speichertemperatur unten"
+            },
+            "sol_solarertrag_gesamt": {
+                "name": "Solarertrag Gesamtzähler"
+            },
+            "sol_solarertrag_heute": {
+                "name": "Solarertrag heute"
+            },
+            "sol_solarertrag_vortag": {
+                "name": "Solarertrag Vortag"
+            }
+        },
+        "button": {
+            "sg_warmwasser_push": {
+                "name": "Warmwasser-Push"
+            }
+        }
     }
 }

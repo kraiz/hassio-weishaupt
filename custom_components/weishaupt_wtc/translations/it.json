@@ -1,0 +1,266 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Configurazione Weishaupt WTC",
+                "description": "Connettiti al tuo Systemgerät (SG) Weishaupt tramite l'interfaccia CanApiJson.",
+                "data": {
+                    "host": "Host / Indirizzo IP",
+                    "username": "Nome utente",
+                    "password": "Password",
+                    "scan_interval": "Intervallo di aggiornamento (secondi)"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Impossibile connettersi al dispositivo Weishaupt. Verifica l'indirizzo IP e la rete.",
+            "invalid_auth": "Autenticazione non riuscita. Verifica nome utente e password (predefiniti: admin / Admin123).",
+            "unknown": "Si è verificato un errore imprevisto."
+        },
+        "abort": {
+            "already_configured": "Questo dispositivo è già configurato."
+        }
+    },
+    "entity": {
+        "select": {
+            "sg_betriebsart_hk1_vorgabe": {
+                "name": "Modalità di Funzionamento CR1 Preimpostata"
+            }
+        },
+        "sensor": {
+            "sg_sowi_umschaltung_hk1": {
+                "name": "Commutazione Estate/Inverno CR1"
+            },
+            "sg_betriebsart_hk1_aktuell": {
+                "name": "Modalità di Funzionamento CR1 Attuale"
+            },
+            "sg_status_hk1": {
+                "name": "Stato CR1"
+            },
+            "sg_raumsolltemperatur_komfort": {
+                "name": "Temperatura Ambiente Impostata Comfort"
+            },
+            "sg_raumsolltemperatur_normal": {
+                "name": "Temperatura Ambiente Impostata Normale"
+            },
+            "sg_raumsolltemperatur_absenk": {
+                "name": "Temperatura Ambiente Impostata Ridotta"
+            },
+            "sg_raumsolltemperatur_aktuell": {
+                "name": "Temperatura Ambiente Impostata Attuale"
+            },
+            "sg_vorlaufsolltemperatur_komfort": {
+                "name": "Temperatura di Mandata Impostata Comfort"
+            },
+            "sg_vorlaufsolltemperatur_normal": {
+                "name": "Temperatura di Mandata Impostata Normale"
+            },
+            "sg_vorlaufsolltemperatur_absenk": {
+                "name": "Temperatura di Mandata Impostata Ridotta"
+            },
+            "sg_vorlaufsolltemperatur_sonderniveau": {
+                "name": "Temperatura di Mandata Impostata Livello Speciale"
+            },
+            "sg_n1_vorgabe_ethernet": {
+                "name": "Preimpostazione N1 via Ethernet"
+            },
+            "sg_vorlaufsolltemperatur_aktuell": {
+                "name": "Temperatura di Mandata Impostata Attuale"
+            },
+            "sg_vorlaufisttemperatur": {
+                "name": "Temperatura di Mandata Effettiva"
+            },
+            "sg_plattenwaermetauschertemperatur_b2": {
+                "name": "Temperatura Scambiatore a Piastre (B2)"
+            },
+            "sg_pufferspeicher_temperatur_oben": {
+                "name": "Temperatura Accumulo Superiore"
+            },
+            "sg_pufferspeicher_temperatur_unten": {
+                "name": "Temperatura Accumulo Inferiore"
+            },
+            "sg_canopen_fehlerblock": {
+                "name": "Blocco Errori CANopen"
+            },
+            "sg_fehler_warnung_status": {
+                "name": "Stato Errore/Avviso"
+            },
+            "sg_fehlernummer": {
+                "name": "Numero Errore"
+            },
+            "sg_fehler_modul": {
+                "name": "Modulo Errore"
+            },
+            "sg_systembetriebsart": {
+                "name": "Modalità di Funzionamento Sistema"
+            },
+            "sg_aussentemperatur": {
+                "name": "Temperatura Esterna"
+            },
+            "sg_waermeanforderung_heizung": {
+                "name": "Richiesta di Calore Riscaldamento"
+            },
+            "sg_waermeanforderung_warmwasser": {
+                "name": "Richiesta di Calore ACS"
+            },
+            "sg_status_warmwasser": {
+                "name": "Stato ACS"
+            },
+            "sg_wwsolltemperatur_normal": {
+                "name": "Temperatura ACS Impostata Normale"
+            },
+            "sg_wwsolltemperatur_absenk": {
+                "name": "Temperatura ACS Impostata Ridotta"
+            },
+            "sg_wwsolltemperatur_aktuell": {
+                "name": "Temperatura ACS Impostata Attuale"
+            },
+            "sg_warmwassertemperatur": {
+                "name": "Temperatura ACS"
+            },
+            "sg_ruecklauftemperatur_zirkulation": {
+                "name": "Temperatura di Ritorno Ricircolo"
+            },
+            "sg_pumpe_warmwasser": {
+                "name": "Pompa ACS"
+            },
+            "sg_folgewechsel": {
+                "name": "Cambio Sequenza"
+            },
+            "sg_wechselzeit": {
+                "name": "Tempo di Commutazione"
+            },
+            "sg_kaskade_abgleichtemperatur": {
+                "name": "Temperatura di Bilanciamento Cascata"
+            },
+            "sg_kaskade_sollmodulation_hz": {
+                "name": "Modulazione Richiesta Cascata Riscaldamento"
+            },
+            "sg_kaskade_sollmodulation_ww": {
+                "name": "Modulazione Richiesta Cascata ACS"
+            },
+            "sg_kaskade_sollwert_hz": {
+                "name": "Valore di Setpoint Cascata Riscaldamento"
+            },
+            "sg_kaskade_sollwert_ww": {
+                "name": "Valore di Setpoint Cascata ACS"
+            },
+            "sg_uhrzeit_stunden": {
+                "name": "Ora - Ore"
+            },
+            "sg_uhrzeit_minuten": {
+                "name": "Ora - Minuti"
+            },
+            "sg_datum_tag": {
+                "name": "Data - Giorno"
+            },
+            "sg_datum_monat": {
+                "name": "Data - Mese"
+            },
+            "sg_datum_jahr": {
+                "name": "Data - Anno"
+            },
+            "sg_device_time": {
+                "name": "Ora / Data"
+            },
+            "wtc_betriebsphase": {
+                "name": "Fase di Funzionamento WTC"
+            },
+            "wtc_betriebsphase_brenner": {
+                "name": "Fase di Funzionamento Bruciatore"
+            },
+            "wtc_vorlaufsolltemperatur": {
+                "name": "Temperatura di Mandata Impostata WTC"
+            },
+            "wtc_kesseltemperatur": {
+                "name": "Temperatura Caldaia"
+            },
+            "wtc_volumenstrom_vpt": {
+                "name": "Portata VPT"
+            },
+            "wtc_anlagendruck": {
+                "name": "Pressione Impianto"
+            },
+            "wtc_abgastemperatur": {
+                "name": "Temperatura Fumi WTC"
+            },
+            "wtc_ruecklauftemperatur": {
+                "name": "Temperatura di Ritorno WTC"
+            },
+            "wtc_waermeleistung_vpt": {
+                "name": "Potenza Termica VPT"
+            },
+            "wtc_tageswaermemenge_vortag_gesamt": {
+                "name": "Quantità di Calore Giorno Precedente Totale"
+            },
+            "wtc_tageswaermemenge_vortag_heizen": {
+                "name": "Quantità di Calore Giorno Precedente Riscaldamento"
+            },
+            "wtc_tageswaermemenge_vortag_ww": {
+                "name": "Quantità di Calore Giorno Precedente ACS"
+            },
+            "hk_betriebsart_vorgabe": {
+                "name": "Modalità di Funzionamento CR Preimpostata"
+            },
+            "hk_sowi_umschaltung": {
+                "name": "Commutazione Estate/Inverno CR"
+            },
+            "hk_betriebsart_aktuell": {
+                "name": "Modalità di Funzionamento CR Attuale"
+            },
+            "hk_status": {
+                "name": "Stato CR"
+            },
+            "hk_raumsolltemperatur_komfort": {
+                "name": "Temperatura Ambiente Impostata CR Comfort"
+            },
+            "hk_raumsolltemperatur_normal": {
+                "name": "Temperatura Ambiente Impostata CR Normale"
+            },
+            "hk_raumsolltemperatur_absenk": {
+                "name": "Temperatura Ambiente Impostata CR Ridotta"
+            },
+            "hk_raumsolltemperatur_aktuell": {
+                "name": "Temperatura Ambiente Impostata CR Attuale"
+            },
+            "hk_vorlaufsolltemperatur_komfort": {
+                "name": "Temperatura di Mandata Impostata CR Comfort"
+            },
+            "hk_vorlaufsolltemperatur_normal": {
+                "name": "Temperatura di Mandata Impostata CR Normale"
+            },
+            "hk_vorlaufsolltemperatur_absenk": {
+                "name": "Temperatura di Mandata Impostata CR Ridotta"
+            },
+            "hk_vorlaufsolltemperatur_sonderniveau": {
+                "name": "Temperatura di Mandata Impostata CR Livello Speciale"
+            },
+            "hk_vorlaufsolltemperatur_aktuell": {
+                "name": "Temperatura di Mandata Impostata CR Attuale"
+            },
+            "hk_vorlaufisttemperatur": {
+                "name": "Temperatura di Mandata Effettiva CR"
+            },
+            "sol_kollektortemperatur": {
+                "name": "Temperatura Collettore"
+            },
+            "sol_speichertemperatur_unten": {
+                "name": "Temperatura Bollitore Inferiore"
+            },
+            "sol_solarertrag_gesamt": {
+                "name": "Resa Solare Contatore Totale"
+            },
+            "sol_solarertrag_heute": {
+                "name": "Resa Solare Oggi"
+            },
+            "sol_solarertrag_vortag": {
+                "name": "Resa Solare Giorno Precedente"
+            }
+        },
+        "button": {
+            "sg_warmwasser_push": {
+                "name": "Boost ACS"
+            }
+        }
+    }
+}

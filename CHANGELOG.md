@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.6 - 2026-07-23
+
+- Feature: Translate all sensor, select and button entity names via Home Assistant's `translation_key` mechanism instead of hardcoded German strings. Adds English and Italian translations alongside the existing German ones; any other HA language falls back to English.
+
 ## 0.2.5 - 2026-04-19
 
 - Fix: Make device timestamp timezone-aware (UTC) to fix auto-update of sensor values (#5, thanks @wagnerpizza).

@@ -20,5 +20,247 @@
         "abort": {
             "already_configured": "This device is already configured."
         }
+    },
+    "entity": {
+        "select": {
+            "sg_betriebsart_hk1_vorgabe": {
+                "name": "HC1 Operating Mode Setpoint"
+            }
+        },
+        "sensor": {
+            "sg_sowi_umschaltung_hk1": {
+                "name": "HC1 Summer/Winter Switchover"
+            },
+            "sg_betriebsart_hk1_aktuell": {
+                "name": "HC1 Operating Mode Current"
+            },
+            "sg_status_hk1": {
+                "name": "HC1 Status"
+            },
+            "sg_raumsolltemperatur_komfort": {
+                "name": "Room Setpoint Temperature Comfort"
+            },
+            "sg_raumsolltemperatur_normal": {
+                "name": "Room Setpoint Temperature Normal"
+            },
+            "sg_raumsolltemperatur_absenk": {
+                "name": "Room Setpoint Temperature Setback"
+            },
+            "sg_raumsolltemperatur_aktuell": {
+                "name": "Room Setpoint Temperature Current"
+            },
+            "sg_vorlaufsolltemperatur_komfort": {
+                "name": "Flow Setpoint Temperature Comfort"
+            },
+            "sg_vorlaufsolltemperatur_normal": {
+                "name": "Flow Setpoint Temperature Normal"
+            },
+            "sg_vorlaufsolltemperatur_absenk": {
+                "name": "Flow Setpoint Temperature Setback"
+            },
+            "sg_vorlaufsolltemperatur_sonderniveau": {
+                "name": "Flow Setpoint Temperature Special Level"
+            },
+            "sg_n1_vorgabe_ethernet": {
+                "name": "N1 Setpoint via Ethernet"
+            },
+            "sg_vorlaufsolltemperatur_aktuell": {
+                "name": "Flow Setpoint Temperature Current"
+            },
+            "sg_vorlaufisttemperatur": {
+                "name": "Flow Actual Temperature"
+            },
+            "sg_plattenwaermetauschertemperatur_b2": {
+                "name": "Plate Heat Exchanger Temperature (B2)"
+            },
+            "sg_pufferspeicher_temperatur_oben": {
+                "name": "Buffer Tank Temperature Top"
+            },
+            "sg_pufferspeicher_temperatur_unten": {
+                "name": "Buffer Tank Temperature Bottom"
+            },
+            "sg_canopen_fehlerblock": {
+                "name": "CANopen Fault Block"
+            },
+            "sg_fehler_warnung_status": {
+                "name": "Fault/Warning Status"
+            },
+            "sg_fehlernummer": {
+                "name": "Fault Number"
+            },
+            "sg_fehler_modul": {
+                "name": "Fault Module"
+            },
+            "sg_systembetriebsart": {
+                "name": "System Operating Mode"
+            },
+            "sg_aussentemperatur": {
+                "name": "Outdoor Temperature"
+            },
+            "sg_waermeanforderung_heizung": {
+                "name": "Heating Heat Demand"
+            },
+            "sg_waermeanforderung_warmwasser": {
+                "name": "DHW Heat Demand"
+            },
+            "sg_status_warmwasser": {
+                "name": "DHW Status"
+            },
+            "sg_wwsolltemperatur_normal": {
+                "name": "DHW Setpoint Temperature Normal"
+            },
+            "sg_wwsolltemperatur_absenk": {
+                "name": "DHW Setpoint Temperature Setback"
+            },
+            "sg_wwsolltemperatur_aktuell": {
+                "name": "DHW Setpoint Temperature Current"
+            },
+            "sg_warmwassertemperatur": {
+                "name": "DHW Temperature"
+            },
+            "sg_ruecklauftemperatur_zirkulation": {
+                "name": "Circulation Return Temperature"
+            },
+            "sg_pumpe_warmwasser": {
+                "name": "DHW Pump"
+            },
+            "sg_folgewechsel": {
+                "name": "Sequence Change"
+            },
+            "sg_wechselzeit": {
+                "name": "Switch Time"
+            },
+            "sg_kaskade_abgleichtemperatur": {
+                "name": "Cascade Balancing Temperature"
+            },
+            "sg_kaskade_sollmodulation_hz": {
+                "name": "Cascade Target Modulation Heating"
+            },
+            "sg_kaskade_sollmodulation_ww": {
+                "name": "Cascade Target Modulation DHW"
+            },
+            "sg_kaskade_sollwert_hz": {
+                "name": "Cascade Setpoint Heating"
+            },
+            "sg_kaskade_sollwert_ww": {
+                "name": "Cascade Setpoint DHW"
+            },
+            "sg_uhrzeit_stunden": {
+                "name": "Time Hours"
+            },
+            "sg_uhrzeit_minuten": {
+                "name": "Time Minutes"
+            },
+            "sg_datum_tag": {
+                "name": "Date Day"
+            },
+            "sg_datum_monat": {
+                "name": "Date Month"
+            },
+            "sg_datum_jahr": {
+                "name": "Date Year"
+            },
+            "sg_device_time": {
+                "name": "Time / Date"
+            },
+            "wtc_betriebsphase": {
+                "name": "WTC Operating Phase"
+            },
+            "wtc_betriebsphase_brenner": {
+                "name": "Burner Operating Phase"
+            },
+            "wtc_vorlaufsolltemperatur": {
+                "name": "WTC Flow Setpoint Temperature"
+            },
+            "wtc_kesseltemperatur": {
+                "name": "Boiler Temperature"
+            },
+            "wtc_volumenstrom_vpt": {
+                "name": "Flow Rate VPT"
+            },
+            "wtc_anlagendruck": {
+                "name": "System Pressure"
+            },
+            "wtc_abgastemperatur": {
+                "name": "WTC Flue Gas Temperature"
+            },
+            "wtc_ruecklauftemperatur": {
+                "name": "WTC Return Temperature"
+            },
+            "wtc_waermeleistung_vpt": {
+                "name": "Heat Output VPT"
+            },
+            "wtc_tageswaermemenge_vortag_gesamt": {
+                "name": "Daily Heat Quantity Previous Day Total"
+            },
+            "wtc_tageswaermemenge_vortag_heizen": {
+                "name": "Daily Heat Quantity Previous Day Heating"
+            },
+            "wtc_tageswaermemenge_vortag_ww": {
+                "name": "Daily Heat Quantity Previous Day DHW"
+            },
+            "hk_betriebsart_vorgabe": {
+                "name": "HC Operating Mode Setpoint"
+            },
+            "hk_sowi_umschaltung": {
+                "name": "HC Summer/Winter Switchover"
+            },
+            "hk_betriebsart_aktuell": {
+                "name": "HC Operating Mode Current"
+            },
+            "hk_status": {
+                "name": "HC Status"
+            },
+            "hk_raumsolltemperatur_komfort": {
+                "name": "HC Room Setpoint Temperature Comfort"
+            },
+            "hk_raumsolltemperatur_normal": {
+                "name": "HC Room Setpoint Temperature Normal"
+            },
+            "hk_raumsolltemperatur_absenk": {
+                "name": "HC Room Setpoint Temperature Setback"
+            },
+            "hk_raumsolltemperatur_aktuell": {
+                "name": "HC Room Setpoint Temperature Current"
+            },
+            "hk_vorlaufsolltemperatur_komfort": {
+                "name": "HC Flow Setpoint Temperature Comfort"
+            },
+            "hk_vorlaufsolltemperatur_normal": {
+                "name": "HC Flow Setpoint Temperature Normal"
+            },
+            "hk_vorlaufsolltemperatur_absenk": {
+                "name": "HC Flow Setpoint Temperature Setback"
+            },
+            "hk_vorlaufsolltemperatur_sonderniveau": {
+                "name": "HC Flow Setpoint Temperature Special Level"
+            },
+            "hk_vorlaufsolltemperatur_aktuell": {
+                "name": "HC Flow Setpoint Temperature Current"
+            },
+            "hk_vorlaufisttemperatur": {
+                "name": "HC Flow Actual Temperature"
+            },
+            "sol_kollektortemperatur": {
+                "name": "Collector Temperature"
+            },
+            "sol_speichertemperatur_unten": {
+                "name": "Storage Tank Temperature Bottom"
+            },
+            "sol_solarertrag_gesamt": {
+                "name": "Solar Yield Total Counter"
+            },
+            "sol_solarertrag_heute": {
+                "name": "Solar Yield Today"
+            },
+            "sol_solarertrag_vortag": {
+                "name": "Solar Yield Previous Day"
+            }
+        },
+        "button": {
+            "sg_warmwasser_push": {
+                "name": "DHW Boost"
+            }
+        }
     }
 }
