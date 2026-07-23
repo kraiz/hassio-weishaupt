@@ -60,7 +60,7 @@ class WeishauptSelectEntity(CoordinatorEntity, SelectEntity):
         self._entry = entry
 
         self._attr_unique_id = f"{entry.entry_id}_{sensor_def.key}"
-        self._attr_name = sensor_def.name
+        self._attr_translation_key = sensor_def.key
         self._attr_icon = sensor_def.icon
 
     @property
