@@ -170,6 +170,35 @@ sensor = load_module(
 class SensorDefinitionTests(unittest.TestCase):
     """Test register metadata used to poll sensor values."""
 
+    def test_hk2_definitions_use_second_module_index(self) -> None:
+        """Expose the documented HK2 registers through module index one."""
+        self.assertEqual(
+            [sensor_def.modbus_reg for sensor_def in sensors.HK_SENSORS],
+            [
+                "1030",
+                "1031",
+                "1032",
+                "1033",
+                "1036",
+                "1037",
+                "1038",
+                "1039",
+                "1040",
+                "1041",
+                "1042",
+                "1043",
+                "1045",
+                "1046",
+            ],
+        )
+        self.assertTrue(
+            all(
+                sensor_def.mx == 0x01
+                and sensor_def.group is sensors.WeishauptDeviceGroup.HK
+                for sensor_def in sensors.HK_SENSORS
+            )
+        )
+
     def test_date_components_use_year_month_day_byte_order(self) -> None:
         """Map the device date bytes to their corresponding components."""
         date_definitions = {
@@ -252,6 +281,16 @@ class SensorDeviceInfoTests(unittest.TestCase):
             entity.device_info["via_device"],
             ("weishaupt_wtc", "entry-123_sg"),
         )
+
+    def test_hk2_device_is_named_as_second_heating_circuit(self) -> None:
+        """Identify module index one as heating circuit two."""
+        entity = sensor.WeishauptSensorEntity(
+            coordinator=SimpleNamespace(data={}),
+            sensor_def=sensors.HK_SENSORS[0],
+            entry=SimpleNamespace(entry_id="entry-123"),
+        )
+
+        self.assertEqual(entity.device_info["name"], "Weishaupt Heizkreis 2")
 
 
 if __name__ == "__main__":

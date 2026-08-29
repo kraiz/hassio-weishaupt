@@ -30,7 +30,7 @@ _LOGGER = logging.getLogger(__name__)
 DEVICE_GROUP_NAMES = {
     WeishauptDeviceGroup.SG: "Systemgerät",
     WeishauptDeviceGroup.WTC: "WTC Kessel",
-    WeishauptDeviceGroup.HK: "Heizkreis",
+    WeishauptDeviceGroup.HK: "Heizkreis 2",
     WeishauptDeviceGroup.WW: "Warmwasser",
     WeishauptDeviceGroup.SOL: "Solar",
     WeishauptDeviceGroup.KA: "Kaskade",

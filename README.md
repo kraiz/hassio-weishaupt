@@ -79,7 +79,11 @@ The integration provides **77 sensors** across these device groups:
 - Wärmeleistung VPT
 - Tageswärmemenge Vortag (Gesamt / Heizen / Warmwasser)
 
-### Heizkreis (HK) — Modbus 1030-1046
+### Heizkreis 2 (HK2 / EM-HK) — Modbus 1030-1046
+
+Heizkreis 1 is exposed through the Systemgerät (`MX=0`); these entities expose
+the second heating circuit through the EM-HK module (`MX=1`).
+
 - Betriebsart Vorgabe / aktuell
 - So/Wi Umschaltung, Status
 - Raumsolltemperaturen (Komfort / Normal / Absenk / aktuell)

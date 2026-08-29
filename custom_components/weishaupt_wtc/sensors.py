@@ -1095,7 +1095,7 @@ WTC_SENSORS: list[WeishauptSensorDefinition] = [
 
 
 # ============================================================================
-# Sensor definitions — HK (Heizkreis / EM-HK) — Modbus 1030-1046
+# Sensor definitions — HK2 (Heizkreis 2 / EM-HK) — Modbus 1030-1046
 # ============================================================================
 
 HK_SENSORS: list[WeishauptSensorDefinition] = [
