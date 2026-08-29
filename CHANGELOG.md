@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.6 - 2026-07-23
+## 0.2.6 - 2026-08-29
 
 - Feature: Translate all sensor, select and button entity names via Home Assistant's `translation_key` mechanism instead of hardcoded German strings. Adds English and Italian translations alongside the existing German ones; any other HA language falls back to English (#12).
 - Fix: Identify the existing EM-HK sensor group as Heizkreis 2 and document its `MX=1` register mapping (#11).
