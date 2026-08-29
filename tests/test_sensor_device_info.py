@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 import importlib.util
 from pathlib import Path
 from types import SimpleNamespace
 import sys
 import types
 import unittest
+from zoneinfo import ZoneInfo
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -96,6 +98,13 @@ entity_platform = types.ModuleType("homeassistant.helpers.entity_platform")
 entity_platform.AddEntitiesCallback = object
 sys.modules.setdefault("homeassistant.helpers.entity_platform", entity_platform)
 
+entity_module = types.ModuleType("homeassistant.helpers.entity")
+entity_module.EntityCategory = SimpleNamespace(
+    CONFIG="config",
+    DIAGNOSTIC="diagnostic",
+)
+sys.modules.setdefault("homeassistant.helpers.entity", entity_module)
+
 update_coordinator = types.ModuleType("homeassistant.helpers.update_coordinator")
 
 
@@ -156,6 +165,58 @@ sys.modules["custom_components.weishaupt_wtc.coordinator"] = coordinator_module
 sensor = load_module(
     "custom_components.weishaupt_wtc.sensor", PACKAGE_ROOT / "sensor.py"
 )
+
+
+class SensorDefinitionTests(unittest.TestCase):
+    """Test register metadata used to poll sensor values."""
+
+    def test_date_components_use_year_month_day_byte_order(self) -> None:
+        """Map the device date bytes to their corresponding components."""
+        date_definitions = {
+            sensor_def.key: (sensor_def.os, sensor_def.modbus_reg)
+            for sensor_def in sensors.SG_SENSORS
+            if sensor_def.key.startswith("sg_datum_")
+        }
+
+        self.assertEqual(
+            date_definitions,
+            {
+                "sg_datum_jahr": (0x02, "153"),
+                "sg_datum_monat": (0x03, "154"),
+                "sg_datum_tag": (0x04, "155"),
+            },
+        )
+
+
+class SensorTimestampTests(unittest.TestCase):
+    """Test the consolidated device timestamp entity."""
+
+    def test_device_time_uses_configured_timezone(self) -> None:
+        """Return an aware datetime in Home Assistant's configured timezone."""
+        sensor_def = next(
+            sensor_def
+            for sensor_def in sensors.SG_SENSORS
+            if sensor_def.key == "sg_device_time"
+        )
+        entity = sensor.WeishauptSensorEntity(
+            coordinator=SimpleNamespace(
+                data={
+                    "sg_uhrzeit_stunden": {"value_int": 13},
+                    "sg_uhrzeit_minuten": {"value_int": 49},
+                    "sg_datum_jahr": {"value_int": 26},
+                    "sg_datum_monat": {"value_int": 8},
+                    "sg_datum_tag": {"value_int": 29},
+                }
+            ),
+            sensor_def=sensor_def,
+            entry=SimpleNamespace(entry_id="entry-123"),
+        )
+        entity.hass = SimpleNamespace(config=SimpleNamespace(time_zone="Europe/Berlin"))
+
+        self.assertEqual(
+            entity.native_value,
+            datetime(2026, 8, 29, 13, 49, tzinfo=ZoneInfo("Europe/Berlin")),
+        )
 
 
 class SensorDeviceInfoTests(unittest.TestCase):

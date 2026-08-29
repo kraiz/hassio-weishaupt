@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
@@ -16,7 +17,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN
 from .coordinator import WeishauptDataUpdateCoordinator
 from .parsing import (
-    build_device_time_iso,
+    build_device_time,
     decode_fault_status,
     decode_fault_status_attributes,
     decode_module_attributes,
@@ -199,7 +200,7 @@ class WeishauptSensorEntity(
                     return None
                 vals[k] = d.get("value_int", 0)
 
-            return build_device_time_iso(vals)
+            return build_device_time(vals, ZoneInfo(self.hass.config.time_zone))
 
         data_key = sensor_def.source_key or sensor_def.key
         data = self.coordinator.data.get(data_key)

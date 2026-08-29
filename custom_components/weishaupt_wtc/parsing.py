@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, tzinfo
 from typing import Mapping, Any
 
 
@@ -53,8 +53,10 @@ def decode_module_attributes(raw_value: int) -> dict[str, int]:
     }
 
 
-def build_device_time_iso(values: Mapping[str, int]) -> str | None:
-    """Build an ISO timestamp from separate SG time/date component values."""
+def build_device_time(
+    values: Mapping[str, int], device_timezone: tzinfo
+) -> datetime | None:
+    """Build a timestamp from separate SG time/date component values."""
     year = values.get("sg_datum_jahr", 0)
     if year < 100:
         year += 2000
@@ -66,9 +68,9 @@ def build_device_time_iso(values: Mapping[str, int]) -> str | None:
             values.get("sg_datum_tag", 1),
             values.get("sg_uhrzeit_stunden", 0),
             values.get("sg_uhrzeit_minuten", 0),
-            tzinfo=timezone.utc,
+            tzinfo=device_timezone,
         )
     except ValueError:
         return None
 
-    return dt.isoformat()
+    return dt

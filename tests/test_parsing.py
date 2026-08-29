@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import importlib.util
 from pathlib import Path
 import unittest
@@ -44,19 +45,20 @@ class ParsingTests(unittest.TestCase):
         self.assertEqual(attrs["module_id"], 0x12)
         self.assertEqual(attrs["module_index"], 0x34)
 
-    def test_build_device_time_iso(self) -> None:
-        """Build an ISO timestamp from separate SG date/time registers."""
-        iso_value = parsing.build_device_time_iso(
+    def test_build_device_time(self) -> None:
+        """Build a timestamp from separate SG date/time registers."""
+        timestamp = parsing.build_device_time(
             {
                 "sg_uhrzeit_stunden": 20,
                 "sg_uhrzeit_minuten": 37,
                 "sg_datum_tag": 26,
                 "sg_datum_monat": 2,
                 "sg_datum_jahr": 23,
-            }
+            },
+            timezone.utc,
         )
 
-        self.assertEqual(iso_value, "2023-02-26T20:37:00")
+        self.assertEqual(timestamp, datetime(2023, 2, 26, 20, 37, tzinfo=timezone.utc))
 
 
 if __name__ == "__main__":
