@@ -60,6 +60,15 @@ def _system_device_identifier(entry_id: str) -> tuple[str, str]:
     return _device_identifier(entry_id, WeishauptDeviceGroup.SG)
 
 
+def _via_device_id(hass: HomeAssistant, entry_id: str) -> str | None:
+    """Resolve the SG device's registry id for use as via_device_id."""
+    registry = dr.async_get(hass)
+    sg_device = registry.async_get_device_by_identifier(
+        _system_device_identifier(entry_id), entry_id
+    )
+    return sg_device.id if sg_device is not None else None
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -145,7 +154,9 @@ class WeishauptSensorEntity(
             model=DEVICE_GROUP_MODELS.get(group, "Unknown"),
         )
         if group is not WeishauptDeviceGroup.SG:
-            device_info["via_device"] = _system_device_identifier(self._entry.entry_id)
+            via_device_id = _via_device_id(self.hass, self._entry.entry_id)
+            if via_device_id is not None:
+                device_info["via_device_id"] = via_device_id
 
         return device_info
 

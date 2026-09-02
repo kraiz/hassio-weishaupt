@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fix: Replace the deprecated `via_device` parameter with `via_device_id` when linking sensor, select and button devices to the Systemgerät, avoiding a deprecation warning that would break in HA Core 2027.8.0 (#14).
+
 ## 0.2.7 - 2026-09-02
 
 - Feature: Add a "Heizkreis 3" sensor group for a second EM-HK expansion module, assuming it addresses itself as `MX=2` on the bus. Unconfirmed against real hardware; entities stay unavailable if the assumption doesn't match the device (#11).

@@ -90,7 +90,23 @@ sys.modules.setdefault("homeassistant.helpers", helpers_pkg)
 
 device_registry_module = types.ModuleType("homeassistant.helpers.device_registry")
 device_registry_module.DeviceInfo = dict
-device_registry_module.async_get = lambda hass: None
+
+
+class _FakeDeviceRegistry:
+    """Minimal device registry stub supporting via_device_id resolution."""
+
+    def __init__(self) -> None:
+        self._devices: dict[tuple[tuple[str, str], str], SimpleNamespace] = {}
+
+    def register(self, identifier: tuple[str, str], config_entry_id: str, device_id: str) -> None:
+        self._devices[(identifier, config_entry_id)] = SimpleNamespace(id=device_id)
+
+    def async_get_device_by_identifier(self, identifier, config_entry_id):
+        return self._devices.get((identifier, config_entry_id))
+
+
+fake_device_registry = _FakeDeviceRegistry()
+device_registry_module.async_get = lambda hass: fake_device_registry
 helpers_pkg.device_registry = device_registry_module
 sys.modules["homeassistant.helpers.device_registry"] = device_registry_module
 
@@ -275,23 +291,25 @@ class SensorDeviceInfoTests(unittest.TestCase):
             {("weishaupt_wtc", "entry-123_sg")},
         )
         self.assertNotIn("via_device", entity.device_info)
+        self.assertNotIn("via_device_id", entity.device_info)
 
     def test_child_device_points_to_system_device(self) -> None:
-        """Non-SG groups should reference the SG device as their parent."""
+        """Non-SG groups should reference the SG device's registry id as via_device_id."""
+        fake_device_registry.register(
+            ("weishaupt_wtc", "entry-123_sg"), "entry-123", "sg-device-id"
+        )
         entity = sensor.WeishauptSensorEntity(
             coordinator=SimpleNamespace(data={}),
             sensor_def=sensors.WTC_SENSORS[0],
             entry=SimpleNamespace(entry_id="entry-123"),
         )
+        entity.hass = SimpleNamespace()
 
         self.assertEqual(
             entity.device_info["identifiers"],
             {("weishaupt_wtc", "entry-123_wtc")},
         )
-        self.assertEqual(
-            entity.device_info["via_device"],
-            ("weishaupt_wtc", "entry-123_sg"),
-        )
+        self.assertEqual(entity.device_info["via_device_id"], "sg-device-id")
 
     def test_hk2_device_is_named_as_second_heating_circuit(self) -> None:
         """Identify module index one as heating circuit two."""
@@ -300,6 +318,7 @@ class SensorDeviceInfoTests(unittest.TestCase):
             sensor_def=sensors.HK_SENSORS[0],
             entry=SimpleNamespace(entry_id="entry-123"),
         )
+        entity.hass = SimpleNamespace()
 
         self.assertEqual(entity.device_info["name"], "Weishaupt Heizkreis 2")
 

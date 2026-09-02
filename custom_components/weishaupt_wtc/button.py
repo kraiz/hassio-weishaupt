@@ -15,7 +15,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
-from .sensor import DEVICE_GROUP_MODELS, DEVICE_GROUP_NAMES, _device_identifier
+from .sensor import DEVICE_GROUP_MODELS, DEVICE_GROUP_NAMES, _device_identifier, _via_device_id
 from .sensors import ALL_SENSORS, WeishauptDeviceGroup, WeishauptSensorDefinition
 
 _LOGGER = logging.getLogger(__name__)
@@ -74,9 +74,9 @@ class WeishauptButtonEntity(CoordinatorEntity, ButtonEntity):
             model=DEVICE_GROUP_MODELS.get(group, "Unknown"),
         )
         if group is not WeishauptDeviceGroup.SG:
-            info["via_device"] = _device_identifier(
-                self._entry.entry_id, WeishauptDeviceGroup.SG
-            )
+            via_device_id = _via_device_id(self.hass, self._entry.entry_id)
+            if via_device_id is not None:
+                info["via_device_id"] = via_device_id
         return info
 
     async def async_press(self) -> None:
