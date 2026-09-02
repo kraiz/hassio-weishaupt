@@ -241,6 +241,48 @@
             "hk_vorlaufisttemperatur": {
                 "name": "HK Vorlaufisttemperatur"
             },
+            "hk3_betriebsart_vorgabe": {
+                "name": "HK3 Betriebsart Vorgabe"
+            },
+            "hk3_sowi_umschaltung": {
+                "name": "HK3 So/Wi Umschaltung"
+            },
+            "hk3_betriebsart_aktuell": {
+                "name": "HK3 Betriebsart aktuell"
+            },
+            "hk3_status": {
+                "name": "HK3 Status"
+            },
+            "hk3_raumsolltemperatur_komfort": {
+                "name": "HK3 Raumsolltemperatur Komfort"
+            },
+            "hk3_raumsolltemperatur_normal": {
+                "name": "HK3 Raumsolltemperatur Normal"
+            },
+            "hk3_raumsolltemperatur_absenk": {
+                "name": "HK3 Raumsolltemperatur Absenk"
+            },
+            "hk3_raumsolltemperatur_aktuell": {
+                "name": "HK3 Raumsolltemperatur aktuell"
+            },
+            "hk3_vorlaufsolltemperatur_komfort": {
+                "name": "HK3 Vorlaufsolltemperatur Komfort"
+            },
+            "hk3_vorlaufsolltemperatur_normal": {
+                "name": "HK3 Vorlaufsolltemperatur Normal"
+            },
+            "hk3_vorlaufsolltemperatur_absenk": {
+                "name": "HK3 Vorlaufsolltemperatur Absenk"
+            },
+            "hk3_vorlaufsolltemperatur_sonderniveau": {
+                "name": "HK3 Vorlaufsolltemperatur Sonderniveau"
+            },
+            "hk3_vorlaufsolltemperatur_aktuell": {
+                "name": "HK3 Vorlaufsolltemperatur aktuell"
+            },
+            "hk3_vorlaufisttemperatur": {
+                "name": "HK3 Vorlaufisttemperatur"
+            },
             "sol_kollektortemperatur": {
                 "name": "Kollektortemperatur"
             },

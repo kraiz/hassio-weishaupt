@@ -241,6 +241,48 @@
             "hk_vorlaufisttemperatur": {
                 "name": "HC Flow Actual Temperature"
             },
+            "hk3_betriebsart_vorgabe": {
+                "name": "HC3 Operating Mode Setpoint"
+            },
+            "hk3_sowi_umschaltung": {
+                "name": "HC3 Summer/Winter Switchover"
+            },
+            "hk3_betriebsart_aktuell": {
+                "name": "HC3 Operating Mode Current"
+            },
+            "hk3_status": {
+                "name": "HC3 Status"
+            },
+            "hk3_raumsolltemperatur_komfort": {
+                "name": "HC3 Room Setpoint Temperature Comfort"
+            },
+            "hk3_raumsolltemperatur_normal": {
+                "name": "HC3 Room Setpoint Temperature Normal"
+            },
+            "hk3_raumsolltemperatur_absenk": {
+                "name": "HC3 Room Setpoint Temperature Setback"
+            },
+            "hk3_raumsolltemperatur_aktuell": {
+                "name": "HC3 Room Setpoint Temperature Current"
+            },
+            "hk3_vorlaufsolltemperatur_komfort": {
+                "name": "HC3 Flow Setpoint Temperature Comfort"
+            },
+            "hk3_vorlaufsolltemperatur_normal": {
+                "name": "HC3 Flow Setpoint Temperature Normal"
+            },
+            "hk3_vorlaufsolltemperatur_absenk": {
+                "name": "HC3 Flow Setpoint Temperature Setback"
+            },
+            "hk3_vorlaufsolltemperatur_sonderniveau": {
+                "name": "HC3 Flow Setpoint Temperature Special Level"
+            },
+            "hk3_vorlaufsolltemperatur_aktuell": {
+                "name": "HC3 Flow Setpoint Temperature Current"
+            },
+            "hk3_vorlaufisttemperatur": {
+                "name": "HC3 Flow Actual Temperature"
+            },
             "sol_kollektortemperatur": {
                 "name": "Collector Temperature"
             },

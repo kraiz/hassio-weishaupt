@@ -55,7 +55,7 @@ http://admin:Admin123@wem-sg/ajax/CanApiJson.json
 
 ## Sensors
 
-The integration provides **77 sensors** across these device groups:
+The integration provides **91 sensors** across these device groups:
 
 ### Systemgerät (SG) — Modbus 100-155
 - Betriebsart HK1 (Vorgabe / aktuell)
@@ -89,6 +89,15 @@ the second heating circuit through the EM-HK module (`MX=1`).
 - Raumsolltemperaturen (Komfort / Normal / Absenk / aktuell)
 - Vorlaufsolltemperaturen (Komfort / Normal / Absenk / Sonderniveau / aktuell)
 - Vorlaufisttemperatur
+
+### Heizkreis 3 (second EM-HK module) — unconfirmed, `MX=2`
+
+Some installations have a second EM-HK expansion module (e.g. two independent
+heating circuits both via expansion modules). This assumes the second module
+addresses itself as `MX=2` on the bus (`MX=0` is the onboard HK1, `MX=1` is
+the first EM-HK/HK2) and exposes the same objects as Heizkreis 2. This has not
+been confirmed against real hardware — entities will simply stay unavailable
+if the assumption is wrong. See [#11](https://github.com/kraiz/hassio-weishaupt/issues/11).
 
 ### Solar (SOL) — Modbus 20-27
 - Kollektortemperatur

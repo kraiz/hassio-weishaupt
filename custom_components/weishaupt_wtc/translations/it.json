@@ -241,6 +241,48 @@
             "hk_vorlaufisttemperatur": {
                 "name": "Temperatura di Mandata Effettiva CR"
             },
+            "hk3_betriebsart_vorgabe": {
+                "name": "Modalità di Funzionamento CR3 Preimpostata"
+            },
+            "hk3_sowi_umschaltung": {
+                "name": "Commutazione Estate/Inverno CR3"
+            },
+            "hk3_betriebsart_aktuell": {
+                "name": "Modalità di Funzionamento CR3 Attuale"
+            },
+            "hk3_status": {
+                "name": "Stato CR3"
+            },
+            "hk3_raumsolltemperatur_komfort": {
+                "name": "Temperatura Ambiente Impostata CR3 Comfort"
+            },
+            "hk3_raumsolltemperatur_normal": {
+                "name": "Temperatura Ambiente Impostata CR3 Normale"
+            },
+            "hk3_raumsolltemperatur_absenk": {
+                "name": "Temperatura Ambiente Impostata CR3 Ridotta"
+            },
+            "hk3_raumsolltemperatur_aktuell": {
+                "name": "Temperatura Ambiente Impostata CR3 Attuale"
+            },
+            "hk3_vorlaufsolltemperatur_komfort": {
+                "name": "Temperatura di Mandata Impostata CR3 Comfort"
+            },
+            "hk3_vorlaufsolltemperatur_normal": {
+                "name": "Temperatura di Mandata Impostata CR3 Normale"
+            },
+            "hk3_vorlaufsolltemperatur_absenk": {
+                "name": "Temperatura di Mandata Impostata CR3 Ridotta"
+            },
+            "hk3_vorlaufsolltemperatur_sonderniveau": {
+                "name": "Temperatura di Mandata Impostata CR3 Livello Speciale"
+            },
+            "hk3_vorlaufsolltemperatur_aktuell": {
+                "name": "Temperatura di Mandata Impostata CR3 Attuale"
+            },
+            "hk3_vorlaufisttemperatur": {
+                "name": "Temperatura di Mandata Effettiva CR3"
+            },
             "sol_kollektortemperatur": {
                 "name": "Temperatura Collettore"
             },

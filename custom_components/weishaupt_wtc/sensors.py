@@ -31,6 +31,7 @@ class WeishauptDeviceGroup(StrEnum):
     SG = "sg"  # Systemgerät (System device)
     WTC = "wtc"  # WTC boiler
     HK = "hk"  # Heizkreis (Heating circuit)
+    HK3 = "hk3"  # Heizkreis 3 (second EM-HK module, MX=2 assumed - see #11)
     WW = "ww"  # Warmwasser (Domestic hot water) - EM-WW
     SOL = "sol"  # Solar
     KA = "ka"  # Kaskade (Cascade)
@@ -1315,6 +1316,232 @@ HK_SENSORS: list[WeishauptSensorDefinition] = [
 
 
 # ============================================================================
+# Sensor definitions — HK3 (Heizkreis 3 / second EM-HK module)
+#
+# Unconfirmed: assumes a second EM-HK module addresses itself as MX=2 (the
+# onboard HK1 uses MX=0, the first EM-HK/HK2 uses MX=1). Same OX/OS objects
+# as HK2 since it's the same module type. No official Modbus TCP register
+# mapping is documented for a third circuit, so modbus_reg is left unset.
+# See https://github.com/kraiz/hassio-weishaupt/issues/11.
+# ============================================================================
+
+HK3_SENSORS: list[WeishauptSensorDefinition] = [
+    WeishauptSensorDefinition(
+        key="hk3_betriebsart_vorgabe",
+        name="HK3 Betriebsart Vorgabe",
+        mi=0x02,
+        mx=0x02,
+        ox=0x2533,
+        os=0x02,
+        vs=1,
+        group=WeishauptDeviceGroup.HK3,
+        modbus_reg="",
+        icon="mdi:thermostat",
+        value_map=BETRIEBSART_VORGABE_MAP,
+    ),
+    WeishauptSensorDefinition(
+        key="hk3_sowi_umschaltung",
+        name="HK3 So/Wi Umschaltung",
+        mi=0x02,
+        mx=0x02,
+        ox=0x2582,
+        os=0x02,
+        vs=1,
+        group=WeishauptDeviceGroup.HK3,
+        modbus_reg="",
+        icon="mdi:sun-snowflake-variant",
+        value_map=SOWI_UMSCHALTUNG_MAP,
+    ),
+    WeishauptSensorDefinition(
+        key="hk3_betriebsart_aktuell",
+        name="HK3 Betriebsart aktuell",
+        mi=0x02,
+        mx=0x02,
+        ox=0x257E,
+        os=0x04,
+        vs=1,
+        group=WeishauptDeviceGroup.HK3,
+        modbus_reg="",
+        icon="mdi:thermostat",
+        value_map=BETRIEBSART_AKTUELL_MAP,
+    ),
+    WeishauptSensorDefinition(
+        key="hk3_status",
+        name="HK3 Status",
+        mi=0x02,
+        mx=0x02,
+        ox=0x257E,
+        os=0x05,
+        vs=1,
+        group=WeishauptDeviceGroup.HK3,
+        modbus_reg="",
+        icon="mdi:information-outline",
+        value_map=STATUS_HK_MAP,
+    ),
+    WeishauptSensorDefinition(
+        key="hk3_raumsolltemperatur_komfort",
+        name="HK3 Raumsolltemperatur Komfort",
+        mi=0x02,
+        mx=0x02,
+        ox=0x253B,
+        os=0x02,
+        vs=2,
+        group=WeishauptDeviceGroup.HK3,
+        modbus_reg="",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        unit=UnitOfTemperature.CELSIUS,
+        scale=0.1,
+        signed=True,
+    ),
+    WeishauptSensorDefinition(
+        key="hk3_raumsolltemperatur_normal",
+        name="HK3 Raumsolltemperatur Normal",
+        mi=0x02,
+        mx=0x02,
+        ox=0x253A,
+        os=0x02,
+        vs=2,
+        group=WeishauptDeviceGroup.HK3,
+        modbus_reg="",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        unit=UnitOfTemperature.CELSIUS,
+        scale=0.1,
+        signed=True,
+    ),
+    WeishauptSensorDefinition(
+        key="hk3_raumsolltemperatur_absenk",
+        name="HK3 Raumsolltemperatur Absenk",
+        mi=0x02,
+        mx=0x02,
+        ox=0x2539,
+        os=0x02,
+        vs=2,
+        group=WeishauptDeviceGroup.HK3,
+        modbus_reg="",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        unit=UnitOfTemperature.CELSIUS,
+        scale=0.1,
+        signed=True,
+    ),
+    WeishauptSensorDefinition(
+        key="hk3_raumsolltemperatur_aktuell",
+        name="HK3 Raumsolltemperatur aktuell",
+        mi=0x02,
+        mx=0x02,
+        ox=0x2558,
+        os=0x02,
+        vs=2,
+        group=WeishauptDeviceGroup.HK3,
+        modbus_reg="",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        unit=UnitOfTemperature.CELSIUS,
+        scale=0.1,
+        signed=True,
+    ),
+    WeishauptSensorDefinition(
+        key="hk3_vorlaufsolltemperatur_komfort",
+        name="HK3 Vorlaufsolltemperatur Komfort",
+        mi=0x02,
+        mx=0x02,
+        ox=0x256B,
+        os=0x02,
+        vs=2,
+        group=WeishauptDeviceGroup.HK3,
+        modbus_reg="",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        unit=UnitOfTemperature.CELSIUS,
+        scale=0.1,
+        signed=True,
+    ),
+    WeishauptSensorDefinition(
+        key="hk3_vorlaufsolltemperatur_normal",
+        name="HK3 Vorlaufsolltemperatur Normal",
+        mi=0x02,
+        mx=0x02,
+        ox=0x256A,
+        os=0x02,
+        vs=2,
+        group=WeishauptDeviceGroup.HK3,
+        modbus_reg="",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        unit=UnitOfTemperature.CELSIUS,
+        scale=0.1,
+        signed=True,
+    ),
+    WeishauptSensorDefinition(
+        key="hk3_vorlaufsolltemperatur_absenk",
+        name="HK3 Vorlaufsolltemperatur Absenk",
+        mi=0x02,
+        mx=0x02,
+        ox=0x2569,
+        os=0x02,
+        vs=2,
+        group=WeishauptDeviceGroup.HK3,
+        modbus_reg="",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        unit=UnitOfTemperature.CELSIUS,
+        scale=0.1,
+        signed=True,
+    ),
+    WeishauptSensorDefinition(
+        key="hk3_vorlaufsolltemperatur_sonderniveau",
+        name="HK3 Vorlaufsolltemperatur Sonderniveau",
+        mi=0x02,
+        mx=0x02,
+        ox=0x252C,
+        os=0x02,
+        vs=2,
+        group=WeishauptDeviceGroup.HK3,
+        modbus_reg="",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        unit=UnitOfTemperature.CELSIUS,
+        scale=0.1,
+        signed=True,
+    ),
+    WeishauptSensorDefinition(
+        key="hk3_vorlaufsolltemperatur_aktuell",
+        name="HK3 Vorlaufsolltemperatur aktuell",
+        mi=0x02,
+        mx=0x02,
+        ox=0x2559,
+        os=0x02,
+        vs=2,
+        group=WeishauptDeviceGroup.HK3,
+        modbus_reg="",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        unit=UnitOfTemperature.CELSIUS,
+        scale=0.1,
+        signed=True,
+    ),
+    WeishauptSensorDefinition(
+        key="hk3_vorlaufisttemperatur",
+        name="HK3 Vorlaufisttemperatur",
+        mi=0x02,
+        mx=0x02,
+        ox=0x2507,
+        os=0x02,
+        vs=2,
+        group=WeishauptDeviceGroup.HK3,
+        modbus_reg="",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        unit=UnitOfTemperature.CELSIUS,
+        scale=0.1,
+        signed=True,
+    ),
+]
+
+
+# ============================================================================
 # Sensor definitions — SOL (Solar) — Modbus 20-27
 # ============================================================================
 
@@ -1404,7 +1631,7 @@ SOL_SENSORS: list[WeishauptSensorDefinition] = [
 # ============================================================================
 
 ALL_SENSORS: list[WeishauptSensorDefinition] = (
-    SG_SENSORS + WTC_SENSORS + HK_SENSORS + SOL_SENSORS
+    SG_SENSORS + WTC_SENSORS + HK_SENSORS + HK3_SENSORS + SOL_SENSORS
 )
 
 POLLED_SENSORS: list[WeishauptSensorDefinition] = [

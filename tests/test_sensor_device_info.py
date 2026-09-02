@@ -199,6 +199,17 @@ class SensorDefinitionTests(unittest.TestCase):
             )
         )
 
+    def test_hk3_definitions_assume_second_module_address(self) -> None:
+        """Assume the second EM-HK module addresses itself as MX=2 (#11)."""
+        self.assertEqual(len(sensors.HK3_SENSORS), len(sensors.HK_SENSORS))
+        self.assertTrue(
+            all(
+                sensor_def.mx == 0x02
+                and sensor_def.group is sensors.WeishauptDeviceGroup.HK3
+                for sensor_def in sensors.HK3_SENSORS
+            )
+        )
+
     def test_date_components_use_year_month_day_byte_order(self) -> None:
         """Map the device date bytes to their corresponding components."""
         date_definitions = {

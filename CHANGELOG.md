@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.7 - 2026-09-02
+
+- Feature: Add a "Heizkreis 3" sensor group for a second EM-HK expansion module, assuming it addresses itself as `MX=2` on the bus. Unconfirmed against real hardware; entities stay unavailable if the assumption doesn't match the device (#11).
+
 ## 0.2.6 - 2026-08-29
 
 - Feature: Translate all sensor, select and button entity names via Home Assistant's `translation_key` mechanism instead of hardcoded German strings. Adds English and Italian translations alongside the existing German ones; any other HA language falls back to English (#12).
