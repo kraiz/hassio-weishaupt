@@ -11,7 +11,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .api import WeishauptApiClient, WeishauptApiError, WeishauptConnectionError
 from .const import DOMAIN
-from .sensors import POLLED_SENSORS
+from .sensors import OPTIONAL_GROUPS, POLLED_SENSORS, WeishauptDeviceGroup
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,11 +33,20 @@ class WeishauptDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             update_interval=timedelta(seconds=scan_interval),
         )
         self.client = client
+        # None until the first refresh completes; afterward holds the optional
+        # groups (HK, HK3, SOL, ...) that actually responded on this device.
+        self.active_groups: set[WeishauptDeviceGroup] | None = None
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from the Weishaupt device."""
         params = []
         for sensor_def in POLLED_SENSORS:
+            if (
+                self.active_groups is not None
+                and sensor_def.group in OPTIONAL_GROUPS
+                and sensor_def.group not in self.active_groups
+            ):
+                continue
             params.append(
                 {
                     "key": sensor_def.key,
@@ -55,5 +64,16 @@ class WeishauptDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             raise UpdateFailed(f"Connection error: {err}") from err
         except WeishauptApiError as err:
             raise UpdateFailed(f"API error: {err}") from err
+
+        if self.active_groups is None:
+            self.active_groups = {
+                sensor_def.group
+                for sensor_def in POLLED_SENSORS
+                if sensor_def.group in OPTIONAL_GROUPS and sensor_def.key in results
+            }
+            _LOGGER.debug(
+                "Detected optional device groups: %s",
+                sorted(group.value for group in self.active_groups),
+            )
 
         return results

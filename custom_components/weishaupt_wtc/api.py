@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from typing import Any
 
 import aiohttp
@@ -13,7 +14,11 @@ from .const import API_ENDPOINT, CMD_GET, CMD_SET, CMD_RESPONSE, CMD_ERROR, SRC_
 _LOGGER = logging.getLogger(__name__)
 
 REQUEST_ID = "12345678"
-MAX_PARAMS_PER_REQUEST = 10  # Weishaupt supports up to 10 VG frames per request
+# Larger batches have been observed to cause individual frames to return
+# CMD_ERROR on some hardware, even though the same registers read fine in
+# smaller batches; 6 is what other CanApiJson implementations settled on.
+MAX_PARAMS_PER_REQUEST = 6
+MIN_REQUEST_INTERVAL = 0.3  # seconds between requests, avoids overloading the device
 
 
 class WeishauptApiError(Exception):
@@ -89,6 +94,7 @@ class WeishauptApiClient:
         username: str,
         password: str,
         session: aiohttp.ClientSession | None = None,
+        min_request_interval: float = MIN_REQUEST_INTERVAL,
     ) -> None:
         """Initialize the API client."""
         self._host = host
@@ -97,6 +103,9 @@ class WeishauptApiClient:
         self._session = session
         self._own_session = session is None
         self._base_url = f"http://{host}{API_ENDPOINT}"
+        self._request_lock = asyncio.Lock()
+        self._last_request_at: float | None = None
+        self._min_request_interval = min_request_interval
 
     async def _ensure_session(self) -> aiohttp.ClientSession:
         """Ensure we have an active session."""
@@ -111,8 +120,30 @@ class WeishauptApiClient:
         if self._own_session and self._session and not self._session.closed:
             await self._session.close()
 
+    async def _wait_for_request_slot(self) -> None:
+        """Sleep if needed so requests stay at least min_request_interval apart."""
+        if self._last_request_at is None:
+            return
+        remaining = self._min_request_interval - (time.monotonic() - self._last_request_at)
+        if remaining > 0:
+            await asyncio.sleep(remaining)
+
     async def _post(self, payload: dict) -> dict:
-        """Post a JSON payload to the Weishaupt device."""
+        """Post a JSON payload to the Weishaupt device.
+
+        Serialized through a single lock with a minimum gap between requests,
+        since the device can return CMD_ERROR for individual frames when
+        requests arrive too close together.
+        """
+        async with self._request_lock:
+            await self._wait_for_request_slot()
+            try:
+                return await self._post_once(payload)
+            finally:
+                self._last_request_at = time.monotonic()
+
+    async def _post_once(self, payload: dict) -> dict:
+        """Perform a single HTTP POST, without throttling or locking."""
         session = await self._ensure_session()
         headers = {
             "Connection": "keep-alive",

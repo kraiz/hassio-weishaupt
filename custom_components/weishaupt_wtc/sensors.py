@@ -1637,3 +1637,11 @@ ALL_SENSORS: list[WeishauptSensorDefinition] = (
 POLLED_SENSORS: list[WeishauptSensorDefinition] = [
     sensor for sensor in ALL_SENSORS if sensor.poll
 ]
+
+# Device groups backed by an optional expansion module. These are only
+# created/polled once the coordinator has observed at least one response for
+# the group, so installations without the module don't end up with a
+# permanently-unavailable device (see hacs-weishaupt-lan's module detection).
+OPTIONAL_GROUPS: frozenset[WeishauptDeviceGroup] = frozenset(
+    {WeishauptDeviceGroup.HK, WeishauptDeviceGroup.HK3, WeishauptDeviceGroup.SOL}
+)

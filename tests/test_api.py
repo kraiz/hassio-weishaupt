@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 import sys
+import time
 import types
 import unittest
 
@@ -113,6 +114,61 @@ class ApiClientTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(
             any("Empty response from device" in entry for entry in logs.output)
         )
+
+
+class BatchCountingClient(api.WeishauptApiClient):
+    """Test double that records the batch size of each request."""
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.batch_sizes: list[int] = []
+
+    async def _post_once(self, payload: dict) -> dict | None:
+        self.batch_sizes.append(payload["CAPI"]["NN"])
+        return None
+
+
+class ApiClientBatchingTests(unittest.IsolatedAsyncioTestCase):
+    """Test that reads are split into batches of MAX_PARAMS_PER_REQUEST."""
+
+    async def test_read_parameters_splits_into_batches_of_six(self) -> None:
+        """Larger batches have been observed to cause CMD_ERROR on real hardware."""
+        client = BatchCountingClient(
+            "wem-sg", "admin", "Admin123", min_request_interval=0
+        )
+        params = [
+            {"key": f"p{i}", "mi": 0, "mx": 0, "ox": 0, "os": 0, "vs": 1}
+            for i in range(14)
+        ]
+
+        await client.read_parameters(params)
+
+        self.assertEqual(client.batch_sizes, [6, 6, 2])
+
+
+class ThrottlingClient(api.WeishauptApiClient):
+    """Test double that returns an empty CAPI response for every request."""
+
+    async def _post_once(self, payload: dict) -> dict:
+        return {"CAPI": {}}
+
+
+class ApiClientThrottleTests(unittest.IsolatedAsyncioTestCase):
+    """Test that requests are spaced at least min_request_interval apart."""
+
+    async def test_post_enforces_minimum_interval_between_requests(self) -> None:
+        """Requests arriving too close together can cause CMD_ERROR responses."""
+        client = ThrottlingClient(
+            "wem-sg", "admin", "Admin123", min_request_interval=0.05
+        )
+
+        start = time.monotonic()
+        await client._post({"a": 1})
+        await client._post({"a": 2})
+        await client._post({"a": 3})
+        elapsed = time.monotonic() - start
+
+        self.assertGreaterEqual(elapsed, 0.1)
 
 
 if __name__ == "__main__":

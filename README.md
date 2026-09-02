@@ -104,11 +104,15 @@ if the assumption is wrong. See [#11](https://github.com/kraiz/hassio-weishaupt/
 - Speichertemperatur unten
 - Solarertrag (Gesamtzähler / heute / Vortag)
 
+Heizkreis 2, Heizkreis 3 and Solar are optional expansion modules: the integration only creates their devices/entities once the first poll after startup actually gets a response for that group, so installations without a given module don't end up with permanently-unavailable entities. Reload the integration to re-probe if a module is added later.
+
 ## Protocol
 
 This integration uses the Weishaupt CanApiJson protocol — a CAN bus-like protocol transmitted as JSON over HTTP POST requests to `/ajax/CanApiJson.json`.
 
 Based on research from [BorgNumberOne/Weishaupt_CanApiJson](https://github.com/BorgNumberOne/Weishaupt_CanApiJson).
+
+Reads are batched at up to 6 VG frames per request with a minimum ~300ms gap enforced between requests, since larger/faster batches have been observed to cause intermittent `CMD_ERROR` responses on some hardware.
 
 ## License
 

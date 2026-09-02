@@ -23,7 +23,7 @@ from .parsing import (
     decode_module_attributes,
     extract_value_segment,
 )
-from .sensors import ALL_SENSORS, WeishauptDeviceGroup, WeishauptSensorDefinition
+from .sensors import ALL_SENSORS, OPTIONAL_GROUPS, WeishauptDeviceGroup, WeishauptSensorDefinition
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -69,6 +69,15 @@ def _via_device_id(hass: HomeAssistant, entry_id: str) -> str | None:
     return sg_device.id if sg_device is not None else None
 
 
+def _is_group_active(
+    coordinator: WeishauptDataUpdateCoordinator, group: WeishauptDeviceGroup
+) -> bool:
+    """Return whether an optional device group was detected on this device."""
+    if group not in OPTIONAL_GROUPS:
+        return True
+    return coordinator.active_groups is not None and group in coordinator.active_groups
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -90,6 +99,8 @@ async def async_setup_entry(
     for sensor_def in ALL_SENSORS:
         # Skip creating a read-only sensor when a writable Select or Button exists
         if sensor_def.key in {"sg_betriebsart_hk1_vorgabe", "sg_warmwasser_push"}:
+            continue
+        if not _is_group_active(coordinator, sensor_def.group):
             continue
 
         entities.append(
