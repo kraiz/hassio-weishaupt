@@ -25,6 +25,7 @@ While every effort is made to ensure correct and safe behaviour, the authors and
 2. JSON function must be enabled in the Systemgerät settings
 3. You need the IP address of the Systemgerät (default hostname: `wem-sg`)
 4. Default credentials: `admin` / `Admin123`
+5. The WEM Portal (cloud) connection must be disabled — the Systemgerät does not support using the WEM Portal and the local CanApiJson interface at the same time. If WEM Portal is enabled, it reserves the communication channel for the cloud connection and Home Assistant will not be able to connect.
 
 Test access by opening in your browser:
 ```
