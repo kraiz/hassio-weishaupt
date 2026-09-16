@@ -39,8 +39,20 @@ class WeishauptDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from the Weishaupt device."""
+        sensor_definitions = POLLED_SENSORS
+        if self.active_groups is None:
+            optional_probes: dict[WeishauptDeviceGroup, Any] = {}
+            for sensor_def in POLLED_SENSORS:
+                if sensor_def.group in OPTIONAL_GROUPS:
+                    optional_probes.setdefault(sensor_def.group, sensor_def)
+            sensor_definitions = [
+                sensor_def
+                for sensor_def in POLLED_SENSORS
+                if sensor_def.group not in OPTIONAL_GROUPS
+            ] + list(optional_probes.values())
+
         params = []
-        for sensor_def in POLLED_SENSORS:
+        for sensor_def in sensor_definitions:
             if (
                 self.active_groups is not None
                 and sensor_def.group in OPTIONAL_GROUPS

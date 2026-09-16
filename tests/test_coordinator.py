@@ -171,8 +171,15 @@ class CoordinatorOptionalGroupDetectionTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(coordinator.active_groups, {sensors.WeishauptDeviceGroup.HK})
 
         first_call_keys = {param["key"] for param in client.calls[0]}
-        self.assertIn(sol_key, first_call_keys)
-        self.assertIn(hk3_key, first_call_keys)
+        first_optional_keys = first_call_keys & {hk_key, sol_key, hk3_key}
+        self.assertEqual(first_optional_keys, {hk_key, sol_key, hk3_key})
+        self.assertEqual(
+            sum(
+                param["key"] in {hk_key, sol_key, hk3_key}
+                for param in client.calls[0]
+            ),
+            3,
+        )
 
         await coordinator._async_update_data()
 

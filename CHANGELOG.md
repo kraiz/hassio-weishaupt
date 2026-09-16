@@ -6,6 +6,7 @@
 - Improvement: Reduce the CanApiJson read batch size from 10 to 6 VG frames and enforce a minimum ~300ms gap between requests, avoiding intermittent `CMD_ERROR` responses observed on some hardware with larger/faster batches.
 - Improvement: Auto-detect optional device groups (Heizkreis 2, Heizkreis 3, Solar) from the first successful poll instead of always creating them; installations without those expansion modules no longer get permanently-unavailable entities. Detection happens once per config entry load; reload the integration to re-probe.
 - Credit: The batching, throttling and module-detection changes above are informed by real-hardware findings from [JS-DE-Tech/hacs-weishaupt-lan](https://github.com/JS-DE-Tech/hacs-weishaupt-lan), a fork of this integration, which also independently confirms the Heizkreis 3 `MX=2` assumption from #11.
+- Fix: Probe optional device groups (Heizkreis 2, Heizkreis 3, Solar) once each during initial detection instead of polling every sensor in every absent group; this avoids permanently locking Systemgerät firmware that retains failed absent-module requests (#15).
 
 ## 0.2.7 - 2026-09-02
 

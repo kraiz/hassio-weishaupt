@@ -105,7 +105,7 @@ if the assumption is wrong. See [#11](https://github.com/kraiz/hassio-weishaupt/
 - Speichertemperatur unten
 - Solarertrag (Gesamtzähler / heute / Vortag)
 
-Heizkreis 2, Heizkreis 3 and Solar are optional expansion modules: the integration only creates their devices/entities once the first poll after startup actually gets a response for that group, so installations without a given module don't end up with permanently-unavailable entities. Reload the integration to re-probe if a module is added later.
+Heizkreis 2, Heizkreis 3 and Solar are optional expansion modules. During the first poll, the integration sends only one probe per optional group; it then creates and polls a group fully only when that probe responds. This avoids repeatedly addressing absent CAN modules, which can permanently lock some Systemgerät firmware. Reload the integration to re-probe if a module is added later.
 
 ## Protocol
 
