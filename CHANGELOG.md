@@ -7,6 +7,7 @@
 - Improvement: Auto-detect optional device groups (Heizkreis 2, Heizkreis 3, Solar) from the first successful poll instead of always creating them; installations without those expansion modules no longer get permanently-unavailable entities. Detection happens once per config entry load; reload the integration to re-probe.
 - Credit: The batching, throttling and module-detection changes above are informed by real-hardware findings from [JS-DE-Tech/hacs-weishaupt-lan](https://github.com/JS-DE-Tech/hacs-weishaupt-lan), a fork of this integration, which also independently confirms the Heizkreis 3 `MX=2` assumption from #11.
 - Fix: Probe optional device groups (Heizkreis 2, Heizkreis 3, Solar) once each during initial detection instead of polling every sensor in every absent group; this avoids permanently locking Systemgerät firmware that retains failed absent-module requests (#15).
+- Documentation: Recommend removing and reinstalling the integration for users upgrading from before 0.3.0, so legacy unavailable optional entities and devices are cleared from Home Assistant's registry.
 
 ## 0.2.7 - 2026-09-02
 
