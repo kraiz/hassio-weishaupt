@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 - 2026-09-16
 
 - Fix: Replace the deprecated `via_device` parameter with `via_device_id` when linking sensor, select and button devices to the Systemgerät, avoiding a deprecation warning that would break in HA Core 2027.8.0 (#14).
 - Improvement: Reduce the CanApiJson read batch size from 10 to 6 VG frames and enforce a minimum ~300ms gap between requests, avoiding intermittent `CMD_ERROR` responses observed on some hardware with larger/faster batches.
