@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Feature: Add a "WTC Istleistung" sensor exposing the boiler's current modulation level in percent (CanApiJson `MI=07`, `OX=0x2534`, raw / 100, rounded to whole percent to match the display). Identified on a WTC-GB 15-B Kompakt; not part of the official Modbus register table (BorgNumberOne/Weishaupt_CanApiJson#7).
+
 ## 0.3.0 - 2026-09-16
 
 - Fix: Replace the deprecated `via_device` parameter with `via_device_id` when linking sensor, select and button devices to the Systemgerät, avoiding a deprecation warning that would break in HA Core 2027.8.0 (#14).

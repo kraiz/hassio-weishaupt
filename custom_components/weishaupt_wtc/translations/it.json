@@ -169,6 +169,9 @@
             "wtc_betriebsphase_brenner": {
                 "name": "Fase di Funzionamento Bruciatore"
             },
+            "wtc_istleistung": {
+                "name": "Potenza Attuale WTC"
+            },
             "wtc_vorlaufsolltemperatur": {
                 "name": "Temperatura di Mandata Impostata WTC"
             },

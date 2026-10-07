@@ -55,6 +55,7 @@ class WeishauptSensorDefinition:
     state_class: SensorStateClass | None = None
     unit: str | None = None
     scale: float = 1.0  # Multiply raw value by this to get the actual value
+    precision: int | None = None  # Decimal places to round scaled values to; None = 2
     icon: str | None = None
     value_map: dict[int, str] | None = None  # Map raw values to state strings
     entity_category: str | None = None  # "config" or "diagnostic"
@@ -938,6 +939,24 @@ WTC_SENSORS: list[WeishauptSensorDefinition] = [
         modbus_reg="161",
         icon="mdi:fire",
         value_map=BETRIEBSPHASE_BRENNER_MAP,
+    ),
+    WeishauptSensorDefinition(
+        # Not part of the Modbus table; found via CanApiJson by comparing raw
+        # values with the boiler display (BorgNumberOne/Weishaupt_CanApiJson#7).
+        key="wtc_istleistung",
+        name="WTC Istleistung",
+        mi=0x07,
+        mx=0x00,
+        ox=0x2534,
+        os=0x00,
+        vs=2,
+        group=WeishauptDeviceGroup.WTC,
+        modbus_reg="",
+        icon="mdi:gauge",
+        unit=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        scale=0.01,
+        precision=0,  # Round to whole percent, matching the boiler display
     ),
     WeishauptSensorDefinition(
         key="wtc_vorlaufsolltemperatur",

@@ -275,6 +275,34 @@ class SensorTimestampTests(unittest.TestCase):
         )
 
 
+class SensorPrecisionTests(unittest.TestCase):
+    """Test rounding of scaled sensor values."""
+
+    def test_wtc_istleistung_rounds_to_whole_percent(self) -> None:
+        """Expose the modulation level as whole percent like the display."""
+        sensor_def = next(
+            sensor_def
+            for sensor_def in sensors.WTC_SENSORS
+            if sensor_def.key == "wtc_istleistung"
+        )
+        self.assertEqual(
+            (sensor_def.mi, sensor_def.mx, sensor_def.ox, sensor_def.os, sensor_def.vs),
+            (0x07, 0x00, 0x2534, 0x00, 2),
+        )
+
+        entity = sensor.WeishauptSensorEntity(
+            coordinator=SimpleNamespace(
+                data={"wtc_istleistung": {"value_int": 6819}}
+            ),
+            sensor_def=sensor_def,
+            entry=SimpleNamespace(entry_id="entry-123"),
+        )
+
+        self.assertEqual(entity.native_value, 68)
+        self.assertIsInstance(entity.native_value, int)
+        self.assertEqual(entity._attr_suggested_display_precision, 0)
+
+
 class SensorDeviceInfoTests(unittest.TestCase):
     """Test device registry metadata for sensor entities."""
 

@@ -169,6 +169,9 @@
             "wtc_betriebsphase_brenner": {
                 "name": "Betriebsphase Brenner"
             },
+            "wtc_istleistung": {
+                "name": "WTC Istleistung"
+            },
             "wtc_vorlaufsolltemperatur": {
                 "name": "WTC Vorlaufsolltemperatur"
             },

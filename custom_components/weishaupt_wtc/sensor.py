@@ -139,6 +139,8 @@ class WeishauptSensorEntity(
         self._attr_device_class = sensor_def.device_class
         self._attr_state_class = sensor_def.state_class
         self._attr_icon = sensor_def.icon
+        if sensor_def.precision is not None:
+            self._attr_suggested_display_precision = sensor_def.precision
 
         if sensor_def.entity_category == "diagnostic":
             from homeassistant.helpers.entity import EntityCategory
@@ -268,7 +270,10 @@ class WeishauptSensorEntity(
 
         # Apply scale factor
         if sensor_def.scale != 1.0:
-            return round(raw_value * sensor_def.scale, 2)
+            if sensor_def.precision == 0:
+                return round(raw_value * sensor_def.scale)
+            precision = 2 if sensor_def.precision is None else sensor_def.precision
+            return round(raw_value * sensor_def.scale, precision)
 
         return raw_value
 
