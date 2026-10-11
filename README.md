@@ -75,6 +75,7 @@ The integration provides **91 sensors** across these device groups:
 
 ### WTC Kessel — Modbus 160-177
 - Betriebsphase WTC und Brenner
+- Istleistung / Modulationsgrad in % (CanApiJson `OX=0x2534`, not part of the Modbus table)
 - Vorlaufsolltemperatur, Kesseltemperatur, Rücklauftemperatur, Abgastemperatur
 - Volumenstrom VPT, Anlagendruck
 - Wärmeleistung VPT
