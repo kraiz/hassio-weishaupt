@@ -68,7 +68,7 @@ The integration provides **91 sensors** across these device groups:
 - Außentemperatur
 - Systembetriebsart
 - Wärmeanforderung (Heizung / Warmwasser)
-- Warmwasser: Status, Push, Solltemperaturen, Ist-Temperatur, Zirkulation, Pumpe
+- Warmwasser: Status, Push, Ein/Aus (Schalter), Solltemperaturen, Ist-Temperatur, Zirkulation, Pumpe
 - Kaskade: Folgewechsel, Abgleichtemperatur, Modulation, Sollwerte
 - CANopen Fehler/Warnung Diagnoseblock (disabled by default)
 - Uhrzeit und Datum

@@ -9,6 +9,7 @@ from types import SimpleNamespace
 import sys
 import types
 import unittest
+from unittest.mock import AsyncMock, call
 from zoneinfo import ZoneInfo
 
 
@@ -59,6 +60,16 @@ sensor_component.SensorEntity = SensorEntity
 sensor_component.SensorDeviceClass = SensorDeviceClass()
 sensor_component.SensorStateClass = SensorStateClass()
 sys.modules.setdefault("homeassistant.components.sensor", sensor_component)
+
+switch_component = types.ModuleType("homeassistant.components.switch")
+
+
+class SwitchEntity:
+    """Minimal switch entity stub."""
+
+
+switch_component.SwitchEntity = SwitchEntity
+sys.modules.setdefault("homeassistant.components.switch", switch_component)
 
 config_entries = types.ModuleType("homeassistant.config_entries")
 
@@ -180,6 +191,9 @@ sys.modules["custom_components.weishaupt_wtc.coordinator"] = coordinator_module
 
 sensor = load_module(
     "custom_components.weishaupt_wtc.sensor", PACKAGE_ROOT / "sensor.py"
+)
+switch = load_module(
+    "custom_components.weishaupt_wtc.switch", PACKAGE_ROOT / "switch.py"
 )
 
 
@@ -349,6 +363,56 @@ class SensorDeviceInfoTests(unittest.TestCase):
         entity.hass = SimpleNamespace()
 
         self.assertEqual(entity.device_info["name"], "Weishaupt Heizkreis 2")
+
+
+class WarmwasserSwitchTests(unittest.IsolatedAsyncioTestCase):
+    """Test the Warmwasser on/off switch (WW0 object 0x2520: 1 Ein, 2 Aus)."""
+
+    def setUp(self) -> None:
+        self.coordinator = SimpleNamespace(
+            data={},
+            client=SimpleNamespace(write_parameter=AsyncMock(return_value=True)),
+            async_request_refresh=AsyncMock(),
+        )
+        sensor_def = next(
+            d for d in sensors.SG_SENSORS if d.key == "sg_betriebsart_warmwasser"
+        )
+        self.entity = switch.WeishauptWarmwasserSwitch(
+            coordinator=self.coordinator,
+            sensor_def=sensor_def,
+            entry=SimpleNamespace(entry_id="entry-123"),
+        )
+
+    def test_is_on_maps_ein_aus_and_unknown_values(self) -> None:
+        """Read Ein as on, Aus as off, and any other value as unknown."""
+        for raw, expected in ((1, True), (2, False), (7, None)):
+            self.coordinator.data = {"sg_betriebsart_warmwasser": {"value_int": raw}}
+            self.assertIs(self.entity.is_on, expected)
+
+        self.coordinator.data = {}
+        self.assertIsNone(self.entity.is_on)
+
+    async def test_turn_on_and_off_write_ein_aus_then_refresh(self) -> None:
+        """Write 1 for on and 2 for off to MI 03 / OX 0x2520, then read back."""
+        await self.entity.async_turn_on()
+        await self.entity.async_turn_off()
+
+        self.coordinator.client.write_parameter.assert_has_awaits(
+            [
+                call(mi=0x03, mx=0x00, ox=0x2520, os_val=0x02, vs=1, value_int=1),
+                call(mi=0x03, mx=0x00, ox=0x2520, os_val=0x02, vs=1, value_int=2),
+            ]
+        )
+        self.assertEqual(self.coordinator.async_request_refresh.await_count, 2)
+
+    async def test_failed_write_is_logged_not_raised(self) -> None:
+        """A failing client must not raise into HA; state is still refreshed."""
+        self.coordinator.client.write_parameter.side_effect = RuntimeError("offline")
+
+        with self.assertLogs("custom_components.weishaupt_wtc.switch", level="ERROR"):
+            await self.entity.async_turn_off()
+
+        self.coordinator.async_request_refresh.assert_awaited_once()
 
 
 if __name__ == "__main__":

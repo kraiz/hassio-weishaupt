@@ -627,6 +627,19 @@ SG_SENSORS: list[WeishauptSensorDefinition] = [
         icon="mdi:water-boiler-alert",
         value_map=PUMPE_MAP,
     ),
+    # Warmwasser on/off (1 = Ein, 2 = Aus). Not in Weishaupt's register table; found by scan/diff.
+    WeishauptSensorDefinition(
+        key="sg_betriebsart_warmwasser",
+        name="Betriebsart Warmwasser",
+        mi=0x03,
+        mx=0x00,
+        ox=0x2520,
+        os=0x02,
+        vs=1,
+        group=WeishauptDeviceGroup.SG,
+        modbus_reg="",
+        icon="mdi:water-boiler",
+    ),
     WeishauptSensorDefinition(
         key="sg_wwsolltemperatur_normal",
         name="WW-Solltemperatur Normal",
