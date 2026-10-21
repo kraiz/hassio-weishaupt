@@ -97,8 +97,8 @@ async def async_setup_entry(
 
     entities: list[WeishauptSensorEntity] = []
     for sensor_def in ALL_SENSORS:
-        # Skip creating a read-only sensor when a writable Select or Button exists
-        if sensor_def.key in {"sg_betriebsart_hk1_vorgabe", "sg_warmwasser_push"}:
+        # Skip creating a read-only sensor when a writable Select, Button or Switch exists
+        if sensor_def.key in {"sg_betriebsart_hk1_vorgabe", "sg_warmwasser_push", "sg_betriebsart_warmwasser"}:
             continue
         if not _is_group_active(coordinator, sensor_def.group):
             continue

@@ -56,7 +56,7 @@ http://admin:Admin123@wem-sg/ajax/CanApiJson.json
 
 ## Sensors
 
-The integration provides **91 sensors** across these device groups:
+The integration provides sensors across these device groups:
 
 ### Systemgerät (SG) — Modbus 100-155
 - Betriebsart HK1 (Vorgabe / aktuell)
@@ -68,7 +68,7 @@ The integration provides **91 sensors** across these device groups:
 - Außentemperatur
 - Systembetriebsart
 - Wärmeanforderung (Heizung / Warmwasser)
-- Warmwasser: Status, Push, Solltemperaturen, Ist-Temperatur, Zirkulation, Pumpe
+- Warmwasser: Status, Push, Ein/Aus (Schalter), Solltemperaturen, Ist-Temperatur, Zirkulation, Pumpe
 - Kaskade: Folgewechsel, Abgleichtemperatur, Modulation, Sollwerte
 - CANopen Fehler/Warnung Diagnoseblock (disabled by default)
 - Uhrzeit und Datum

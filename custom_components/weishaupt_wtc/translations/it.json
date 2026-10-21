@@ -306,6 +306,11 @@
             "sg_warmwasser_push": {
                 "name": "Boost ACS"
             }
+        },
+        "switch": {
+            "sg_betriebsart_warmwasser": {
+                "name": "ACS On/Off"
+            }
         }
     }
 }
