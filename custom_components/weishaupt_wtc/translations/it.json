@@ -10,6 +10,10 @@
                     "password": "Password",
                     "scan_interval": "Intervallo di aggiornamento (secondi)"
                 }
+            },
+            "reconfigure": {
+                "title": "Riconosci di nuovo i moduli opzionali",
+                "description": "Verifica una volta CR2, CR3 e Solare e salva il risultato. Eseguire solo se il dispositivo risponde normalmente: le richieste a moduli assenti consumano i posti limitati del dispositivo, che si sblocca solo dopo lo spegnimento."
             }
         },
         "error": {

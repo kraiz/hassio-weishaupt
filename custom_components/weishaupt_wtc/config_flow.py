@@ -21,6 +21,7 @@ from .const import (
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_USERNAME,
     DOMAIN,
+    CONF_DETECTED_GROUPS,
     CONF_SCAN_INTERVAL,
 )
 
@@ -90,3 +91,14 @@ class WeishauptWemConfigFlow(ConfigFlow, domain=DOMAIN):
             data_schema=STEP_USER_DATA_SCHEMA,
             errors=errors,
         )
+
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Re-detect the optional modules on explicit request."""
+        entry = self._get_reconfigure_entry()
+        if user_input is not None:
+            # Dropping the stored result makes the next setup probe again.
+            data = {k: v for k, v in entry.data.items() if k != CONF_DETECTED_GROUPS}
+            return self.async_update_reload_and_abort(entry, data=data)
+        return self.async_show_form(step_id="reconfigure")
