@@ -106,9 +106,7 @@ if the assumption is wrong. See [#11](https://github.com/kraiz/hassio-weishaupt/
 - Speichertemperatur unten
 - Solarertrag (Gesamtzähler / heute / Vortag)
 
-Heizkreis 2, Heizkreis 3 and Solar are optional expansion modules. On the first setup the integration sends one probe per optional group and stores the result in the config entry; restarts and reloads reuse it and send no probes. To re-detect after adding or removing a module, use **Reconfigure → Re-detect optional modules** while the device responds normally. A module removed after detection keeps being polled until you re-detect.
-
-**Avoid repeated reloads and restarts in quick succession.** Each setup without a stored result probes absent modules, and the device counts these requests against a small limit; a few setups within minutes can lock the Systemgerät until it is power-cycled ([#15](https://github.com/kraiz/hassio-weishaupt/issues/15)).
+Heizkreis 2, Heizkreis 3 and Solar are optional expansion modules. On the first setup the integration sends one probe per optional group and stores the result in the config entry; restarts and reloads reuse it and send no probes. To re-detect after adding or removing a module, use **Reconfigure → Re-detect optional modules**, only while the device responds normally, and run it once, not repeatedly: each run probes absent modules, which counts against the device's request limit ([#15](https://github.com/kraiz/hassio-weishaupt/issues/15)). A module removed after detection keeps being polled until you re-detect.
 
 ## Protocol
 
