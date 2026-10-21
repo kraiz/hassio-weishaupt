@@ -56,7 +56,7 @@ http://admin:Admin123@wem-sg/ajax/CanApiJson.json
 
 ## Sensors
 
-The integration provides **91 sensors** across these device groups:
+The integration provides sensors across these device groups:
 
 ### Systemgerät (SG) — Modbus 100-155
 - Betriebsart HK1 (Vorgabe / aktuell)
