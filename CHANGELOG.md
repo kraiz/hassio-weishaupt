@@ -4,8 +4,8 @@
 
 - Upgrade: Users upgrading from a version before 0.3.0 should remove and reinstall the integration, so legacy unavailable optional entities and devices are cleared from Home Assistant's registry. Users already on 0.3.0 can simply update.
 - Feature: Add a "WTC Istleistung" sensor exposing the boiler's current modulation level in percent (CanApiJson `MI=07`, `OX=0x2534`, raw / 100, rounded to whole percent to match the display). Identified and confirmed on a WTC-GB 15-B Kompakt; not part of the official Modbus register table. Thanks @Dud3z for finding the register (BorgNumberOne/Weishaupt_CanApiJson#7) and for the implementation (#16).
-- Feature: Add a `Betriebsart Warmwasser` switch (DHW on/off) for the CanApiJson object `MI 03 / OX 0x2520 / OS 02` (1 = Ein, 2 = Aus). The object is not in Weishaupt's official register table; the address was verified on a WTC-GW 15-B by jvejmelka (#4).
-- Fix: Store the optional-module detection (Heizkreis 2, Heizkreis 3, Solar) in the config entry. Restarts and reloads no longer send probes to absent modules, which could lock the Systemgerät after a few quick setups (#15). Only complete probe answers are stored; a probe without any answer is retried on the next setup.
+- Feature: Add a `Betriebsart Warmwasser` switch (DHW on/off) for the CanApiJson object `MI 03 / OX 0x2520 / OS 02` (1 = Ein, 2 = Aus). The object is not in Weishaupt's official register table; the address was verified on a WTC-GW 15-B by @jvejmelka (#4).
+- Fix: Store the optional-module detection (Heizkreis 2, Heizkreis 3, Solar) in the config entry. Restarts and reloads no longer send probes to absent modules, which could lock the Systemgerät after a few quick setups (#15, thanks @zebbl for the reports and measurements). Only complete probe answers are stored; a probe without any answer is retried on the next setup.
 - Feature: Add *Reconfigure → Re-detect optional modules* to probe again after adding or removing a module. Reloading the integration no longer re-detects; use this instead.
 
 ## 0.3.0 - 2026-09-16
