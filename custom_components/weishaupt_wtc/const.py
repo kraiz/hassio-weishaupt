@@ -6,6 +6,8 @@ CONF_HOST = "host"
 CONF_USERNAME = "username"
 CONF_PASSWORD = "password"
 CONF_SCAN_INTERVAL = "scan_interval"
+# Optional groups found on this device (e.g. ["hk"]); absent until detection has run.
+CONF_DETECTED_GROUPS = "detected_groups"
 
 DEFAULT_USERNAME = "admin"
 DEFAULT_PASSWORD = "Admin123"

@@ -10,6 +10,10 @@
                     "password": "Passwort",
                     "scan_interval": "Abfrageintervall (Sekunden)"
                 }
+            },
+            "reconfigure": {
+                "title": "Optionale Module neu erkennen",
+                "description": "Fragt einmal Heizkreis 2, Heizkreis 3 und Solar ab und speichert das Ergebnis. Nur ausführen, wenn das Gerät normal antwortet: Anfragen an fehlende Module verbrauchen die begrenzten Anfrageplätze des Geräts, und ein gesperrtes Gerät erholt sich erst nach dem Stromlos-Machen."
             }
         },
         "error": {

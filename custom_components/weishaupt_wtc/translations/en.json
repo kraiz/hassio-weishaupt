@@ -10,6 +10,10 @@
                     "password": "Password",
                     "scan_interval": "Scan interval (seconds)"
                 }
+            },
+            "reconfigure": {
+                "title": "Re-detect optional modules",
+                "description": "Probes HC2, HC3 and Solar once and stores the result. Only run this while the device responds normally: probes to absent modules use up its limited request slots, and a locked device only recovers after power-off."
             }
         },
         "error": {

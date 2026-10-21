@@ -17,6 +17,8 @@ REQUEST_ID = "12345678"
 # Larger batches have been observed to cause individual frames to return
 # CMD_ERROR on some hardware, even though the same registers read fine in
 # smaller batches; 6 is what other CanApiJson implementations settled on.
+# 11+ frames per request stall the device (HTTP 200, empty body, other clients
+# blocked ~12 s); 8 and 10 did so sporadically (kraiz/hassio-weishaupt#15).
 MAX_PARAMS_PER_REQUEST = 6
 MIN_REQUEST_INTERVAL = 0.3  # seconds between requests, avoids overloading the device
 
@@ -196,6 +198,13 @@ class WeishauptApiClient:
             return False
 
     async def read_parameters(self, params: list[dict[str, int]]) -> dict[str, Any]:
+        """Read multiple parameters from the device (results only)."""
+        results, _ = await self.read_parameters_with_status(params)
+        return results
+
+    async def read_parameters_with_status(
+        self, params: list[dict[str, int]]
+    ) -> tuple[dict[str, Any], set[str]]:
         """Read multiple parameters from the device.
 
         Args:
@@ -203,9 +212,12 @@ class WeishauptApiClient:
                     where 'key' is a unique identifier for the parameter.
 
         Returns:
-            Dict mapping key -> parsed response value dict
+            (results, answered): results maps key -> parsed response value dict;
+            answered holds every key the device replied to, with a value or with
+            CMD_ERROR. A key missing from answered got no reply at all.
         """
         results = {}
+        answered: set[str] = set()
 
         # Split into batches of MAX_PARAMS_PER_REQUEST
         for batch_start in range(0, len(params), MAX_PARAMS_PER_REQUEST):
@@ -265,6 +277,7 @@ class WeishauptApiClient:
 
                 # Check for error response
                 if parsed["cmd"] == CMD_ERROR:
+                    answered.add(param["key"])
                     _LOGGER.debug(
                         "Error response for %s: %s",
                         param.get("key", key),
@@ -274,9 +287,10 @@ class WeishauptApiClient:
 
                 # Check it's a proper response
                 if parsed["cmd"] == CMD_RESPONSE:
+                    answered.add(param["key"])
                     results[param["key"]] = parsed
 
-        return results
+        return results, answered
 
     async def write_parameter(
         self,

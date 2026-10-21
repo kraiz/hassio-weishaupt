@@ -134,13 +134,13 @@ coordinator_module = load_module(
 
 
 class FakeClient:
-    """Records the params passed to read_parameters and returns canned results."""
+    """Records the params passed to the read and returns canned (results, answered)."""
 
-    def __init__(self, responses: list[dict]) -> None:
+    def __init__(self, responses: list[tuple[dict, set]]) -> None:
         self._responses = responses
         self.calls: list[list[dict]] = []
 
-    async def read_parameters(self, params: list[dict]) -> dict:
+    async def read_parameters_with_status(self, params: list[dict]) -> tuple[dict, set]:
         self.calls.append(params)
         return self._responses[len(self.calls) - 1]
 
@@ -155,12 +155,13 @@ class CoordinatorOptionalGroupDetectionTests(unittest.IsolatedAsyncioTestCase):
         hk3_key = sensors.HK3_SENSORS[0].key
         sg_key = sensors.SG_SENSORS[0].key
 
-        # First poll: HK responds, SOL and HK3 do not.
+        # First poll: HK responds, SOL and HK3 do not (CMD_ERROR, so they are answered).
         first_response = {
             sg_key: {"value_int": 0},
             hk_key: {"value_int": 0},
         }
-        client = FakeClient(responses=[first_response, {}])
+        answered = {sg_key, hk_key, sol_key, hk3_key}
+        client = FakeClient(responses=[(first_response, answered), ({}, set())])
         coordinator = coordinator_module.WeishauptDataUpdateCoordinator(
             hass=SimpleNamespace(), client=client, scan_interval=30
         )
@@ -191,6 +192,81 @@ class CoordinatorOptionalGroupDetectionTests(unittest.IsolatedAsyncioTestCase):
 
         # Detection only happens once; it doesn't get re-evaluated afterward.
         self.assertEqual(coordinator.active_groups, {sensors.WeishauptDeviceGroup.HK})
+
+    async def test_complete_detection_is_handed_to_persist_callback(self) -> None:
+        """Every probe answered (value or CMD_ERROR) means the result can be stored."""
+        hk_key = sensors.HK_SENSORS[0].key
+        sol_key = sensors.SOL_SENSORS[0].key
+        hk3_key = sensors.HK3_SENSORS[0].key
+        sg_key = sensors.SG_SENSORS[0].key
+        client = FakeClient(
+            responses=[
+                (
+                    {sg_key: {"value_int": 0}, hk_key: {"value_int": 0}},
+                    {sg_key, hk_key, sol_key, hk3_key},
+                )
+            ]
+        )
+        stored: list[set] = []
+        coordinator = coordinator_module.WeishauptDataUpdateCoordinator(
+            hass=SimpleNamespace(),
+            client=client,
+            scan_interval=30,
+            on_groups_detected=lambda groups: stored.append(set(groups)),
+        )
+
+        await coordinator._async_update_data()
+
+        self.assertEqual(stored, [{sensors.WeishauptDeviceGroup.HK}])
+
+    async def test_unanswered_probe_is_not_stored(self) -> None:
+        """A probe without any reply says nothing about its module, so it is not persisted."""
+        hk_key = sensors.HK_SENSORS[0].key
+        sg_key = sensors.SG_SENSORS[0].key
+        client = FakeClient(
+            responses=[
+                ({sg_key: {"value_int": 0}, hk_key: {"value_int": 0}}, {sg_key, hk_key})
+            ]
+        )
+        stored: list[set] = []
+        coordinator = coordinator_module.WeishauptDataUpdateCoordinator(
+            hass=SimpleNamespace(),
+            client=client,
+            scan_interval=30,
+            on_groups_detected=lambda groups: stored.append(set(groups)),
+        )
+
+        await coordinator._async_update_data()
+
+        self.assertEqual(coordinator.active_groups, {sensors.WeishauptDeviceGroup.HK})
+        self.assertEqual(stored, [])
+
+    async def test_stored_groups_are_polled_without_probes(self) -> None:
+        """A stored detection result skips probing: only stored optional groups are read."""
+        hk_key = sensors.HK_SENSORS[0].key
+        sol_key = sensors.SOL_SENSORS[0].key
+        hk3_key = sensors.HK3_SENSORS[0].key
+        sg_key = sensors.SG_SENSORS[0].key
+        client = FakeClient(
+            responses=[
+                ({sg_key: {"value_int": 0}, hk_key: {"value_int": 0}}, {sg_key, hk_key})
+            ]
+        )
+        stored: list[set] = []
+        coordinator = coordinator_module.WeishauptDataUpdateCoordinator(
+            hass=SimpleNamespace(),
+            client=client,
+            scan_interval=30,
+            active_groups={sensors.WeishauptDeviceGroup.HK},
+            on_groups_detected=lambda groups: stored.append(set(groups)),
+        )
+
+        await coordinator._async_update_data()
+
+        keys = {param["key"] for param in client.calls[0]}
+        self.assertIn(hk_key, keys)
+        self.assertFalse(keys & {sol_key, hk3_key})
+        self.assertEqual(stored, [])
 
 
 if __name__ == "__main__":

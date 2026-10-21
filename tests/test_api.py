@@ -171,5 +171,42 @@ class ApiClientThrottleTests(unittest.IsolatedAsyncioTestCase):
         self.assertGreaterEqual(elapsed, 0.1)
 
 
+class CannedResponseClient(api.WeishauptApiClient):
+    """API client test double that returns one canned device response."""
+
+    def __init__(self, response: dict) -> None:
+        super().__init__("wem-sg", "admin", "Admin123")
+        self._response = response
+
+    async def _post(self, payload: dict) -> dict:
+        """Return the canned response for every request."""
+        return self._response
+
+
+class ReadAnsweredKeysTests(unittest.IsolatedAsyncioTestCase):
+    """Report which keys the device answered, so detection can tell absent from unknown."""
+
+    async def test_error_replies_count_as_answered_silent_frames_do_not(self) -> None:
+        """CMD_RESPONSE and CMD_ERROR both count as answered; a missing reply does not."""
+        client = CannedResponseClient(
+            {
+                "CAPI": {
+                    "N01": {"VG": "020200253302000101"},  # CMD_RESPONSE, value 1
+                    "N02": {"VG": "050200257e0500020001"},  # CMD_ERROR, absent module
+                }
+            }
+        )
+        params = [
+            {"key": "present", "mi": 0x02, "mx": 0x00, "ox": 0x2533, "os": 0x02, "vs": 1},
+            {"key": "absent", "mi": 0x02, "mx": 0x01, "ox": 0x257E, "os": 0x05, "vs": 1},
+            {"key": "silent", "mi": 0x02, "mx": 0x02, "ox": 0x257E, "os": 0x05, "vs": 1},
+        ]
+
+        results, answered = await client.read_parameters_with_status(params)
+
+        self.assertEqual(set(results), {"present"})
+        self.assertEqual(answered, {"present", "absent"})
+
+
 if __name__ == "__main__":
     unittest.main()
