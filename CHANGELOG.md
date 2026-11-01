@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fix: Swap the register addresses of the "WTC Abgastemperatur" (now `OX=0x2537`, `OS=0x00`) and "WTC Rücklauftemperatur" (now `OX=0x2533`, `OS=0x02`) sensors. The values were reversed compared to the boiler's display (#18, thanks @cg089). The Modbus register references are unchanged.
+
 ## 0.3.1 - 2026-10-21
 
 - Upgrade: Users upgrading from a version before 0.3.0 should remove and reinstall the integration, so legacy unavailable optional entities and devices are cleared from Home Assistant's registry. Users already on 0.3.0 can simply update.
