@@ -78,6 +78,7 @@ class WeishauptDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     "ox": sensor_def.ox,
                     "os": sensor_def.os,
                     "vs": sensor_def.vs,
+                    "request_vs": sensor_def.request_vs or sensor_def.vs,
                 }
             )
 
