@@ -20,6 +20,7 @@ PACKAGE_ROOT = REPO_ROOT / "custom_components" / "weishaupt_wtc"
 def load_module(module_name: str, file_path: Path):
     """Load a module from file while preserving package-relative imports."""
     spec = importlib.util.spec_from_file_location(module_name, file_path)
+    assert spec is not None
     module = importlib.util.module_from_spec(spec)
     assert spec is not None and spec.loader is not None
     sys.modules[module_name] = module
@@ -29,11 +30,11 @@ def load_module(module_name: str, file_path: Path):
 
 homeassistant_pkg = types.ModuleType("homeassistant")
 homeassistant_pkg.__path__ = []
-sys.modules.setdefault("homeassistant", homeassistant_pkg)
+sys.modules["homeassistant"] = homeassistant_pkg
 
 components_pkg = types.ModuleType("homeassistant.components")
 components_pkg.__path__ = []
-sys.modules.setdefault("homeassistant.components", components_pkg)
+sys.modules["homeassistant.components"] = components_pkg
 
 sensor_component = types.ModuleType("homeassistant.components.sensor")
 
@@ -56,10 +57,10 @@ class SensorStateClass:
         return name
 
 
-sensor_component.SensorEntity = SensorEntity
-sensor_component.SensorDeviceClass = SensorDeviceClass()
-sensor_component.SensorStateClass = SensorStateClass()
-sys.modules.setdefault("homeassistant.components.sensor", sensor_component)
+setattr(sensor_component, "SensorEntity", SensorEntity)
+setattr(sensor_component, "SensorDeviceClass", SensorDeviceClass())
+setattr(sensor_component, "SensorStateClass", SensorStateClass())
+sys.modules["homeassistant.components.sensor"] = sensor_component
 
 switch_component = types.ModuleType("homeassistant.components.switch")
 
@@ -68,8 +69,8 @@ class SwitchEntity:
     """Minimal switch entity stub."""
 
 
-switch_component.SwitchEntity = SwitchEntity
-sys.modules.setdefault("homeassistant.components.switch", switch_component)
+setattr(switch_component, "SwitchEntity", SwitchEntity)
+sys.modules["homeassistant.components.switch"] = switch_component
 
 config_entries = types.ModuleType("homeassistant.config_entries")
 
@@ -78,29 +79,29 @@ class ConfigEntry:
     """Minimal config entry stub."""
 
 
-config_entries.ConfigEntry = ConfigEntry
-sys.modules.setdefault("homeassistant.config_entries", config_entries)
+setattr(config_entries, "ConfigEntry", ConfigEntry)
+sys.modules["homeassistant.config_entries"] = config_entries
 
 core = types.ModuleType("homeassistant.core")
-core.HomeAssistant = object
-core.callback = lambda func: func
-sys.modules.setdefault("homeassistant.core", core)
+setattr(core, "HomeAssistant", object)
+setattr(core, "callback", lambda func: func)
+sys.modules["homeassistant.core"] = core
 
 const = types.ModuleType("homeassistant.const")
-const.PERCENTAGE = "%"
-const.UnitOfEnergy = SimpleNamespace(KILO_WATT_HOUR="kWh")
-const.UnitOfPower = SimpleNamespace(KILO_WATT="kW")
-const.UnitOfPressure = SimpleNamespace(BAR="bar")
-const.UnitOfTemperature = SimpleNamespace(CELSIUS="°C")
-const.UnitOfTime = SimpleNamespace(HOURS="h")
-sys.modules.setdefault("homeassistant.const", const)
+setattr(const, "PERCENTAGE", "%")
+setattr(const, "UnitOfEnergy", SimpleNamespace(KILO_WATT_HOUR="kWh"))
+setattr(const, "UnitOfPower", SimpleNamespace(KILO_WATT="kW"))
+setattr(const, "UnitOfPressure", SimpleNamespace(BAR="bar"))
+setattr(const, "UnitOfTemperature", SimpleNamespace(CELSIUS="°C"))
+setattr(const, "UnitOfTime", SimpleNamespace(HOURS="h"))
+sys.modules["homeassistant.const"] = const
 
 helpers_pkg = types.ModuleType("homeassistant.helpers")
 helpers_pkg.__path__ = []
-sys.modules.setdefault("homeassistant.helpers", helpers_pkg)
+sys.modules["homeassistant.helpers"] = helpers_pkg
 
 device_registry_module = types.ModuleType("homeassistant.helpers.device_registry")
-device_registry_module.DeviceInfo = dict
+setattr(device_registry_module, "DeviceInfo", dict)
 
 
 class _FakeDeviceRegistry:
@@ -117,20 +118,24 @@ class _FakeDeviceRegistry:
 
 
 fake_device_registry = _FakeDeviceRegistry()
-device_registry_module.async_get = lambda hass: fake_device_registry
-helpers_pkg.device_registry = device_registry_module
+setattr(device_registry_module, "async_get", lambda hass: fake_device_registry)
+setattr(helpers_pkg, "device_registry", device_registry_module)
 sys.modules["homeassistant.helpers.device_registry"] = device_registry_module
 
 entity_platform = types.ModuleType("homeassistant.helpers.entity_platform")
-entity_platform.AddEntitiesCallback = object
-sys.modules.setdefault("homeassistant.helpers.entity_platform", entity_platform)
+setattr(entity_platform, "AddEntitiesCallback", object)
+sys.modules["homeassistant.helpers.entity_platform"] = entity_platform
 
 entity_module = types.ModuleType("homeassistant.helpers.entity")
-entity_module.EntityCategory = SimpleNamespace(
-    CONFIG="config",
-    DIAGNOSTIC="diagnostic",
+setattr(
+    entity_module,
+    "EntityCategory",
+    SimpleNamespace(
+        CONFIG="config",
+        DIAGNOSTIC="diagnostic",
+    ),
 )
-sys.modules.setdefault("homeassistant.helpers.entity", entity_module)
+sys.modules["homeassistant.helpers.entity"] = entity_module
 
 update_coordinator = types.ModuleType("homeassistant.helpers.update_coordinator")
 
@@ -160,18 +165,18 @@ class UpdateFailed(Exception):
     """Minimal update failure stub."""
 
 
-update_coordinator.CoordinatorEntity = CoordinatorEntity
-update_coordinator.DataUpdateCoordinator = DataUpdateCoordinator
-update_coordinator.UpdateFailed = UpdateFailed
-sys.modules.setdefault("homeassistant.helpers.update_coordinator", update_coordinator)
+setattr(update_coordinator, "CoordinatorEntity", CoordinatorEntity)
+setattr(update_coordinator, "DataUpdateCoordinator", DataUpdateCoordinator)
+setattr(update_coordinator, "UpdateFailed", UpdateFailed)
+sys.modules["homeassistant.helpers.update_coordinator"] = update_coordinator
 
 custom_components_pkg = types.ModuleType("custom_components")
 custom_components_pkg.__path__ = [str(REPO_ROOT / "custom_components")]
-sys.modules.setdefault("custom_components", custom_components_pkg)
+sys.modules["custom_components"] = custom_components_pkg
 
 integration_pkg = types.ModuleType("custom_components.weishaupt_wtc")
 integration_pkg.__path__ = [str(PACKAGE_ROOT)]
-sys.modules.setdefault("custom_components.weishaupt_wtc", integration_pkg)
+sys.modules["custom_components.weishaupt_wtc"] = integration_pkg
 
 load_module("custom_components.weishaupt_wtc.const", PACKAGE_ROOT / "const.py")
 load_module("custom_components.weishaupt_wtc.parsing", PACKAGE_ROOT / "parsing.py")
@@ -186,7 +191,7 @@ class WeishauptDataUpdateCoordinator:
     """Minimal coordinator type stub used by the sensor module."""
 
 
-coordinator_module.WeishauptDataUpdateCoordinator = WeishauptDataUpdateCoordinator
+setattr(coordinator_module, "WeishauptDataUpdateCoordinator", WeishauptDataUpdateCoordinator)
 sys.modules["custom_components.weishaupt_wtc.coordinator"] = coordinator_module
 
 sensor = load_module(
