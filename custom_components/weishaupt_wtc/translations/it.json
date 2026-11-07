@@ -176,6 +176,12 @@
             "wtc_istleistung": {
                 "name": "Potenza Attuale WTC"
             },
+            "wtc_brennerstarts_gesamt": {
+                "name": "Avvii bruciatore totali"
+            },
+            "wtc_betriebsstunden_gesamt": {
+                "name": "Ore di funzionamento bruciatore totali"
+            },
             "wtc_vorlaufsolltemperatur": {
                 "name": "Temperatura di Mandata Impostata WTC"
             },

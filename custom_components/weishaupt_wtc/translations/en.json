@@ -176,6 +176,12 @@
             "wtc_istleistung": {
                 "name": "WTC Current Output"
             },
+            "wtc_brennerstarts_gesamt": {
+                "name": "Burner Starts Total"
+            },
+            "wtc_betriebsstunden_gesamt": {
+                "name": "Burner Operating Hours Total"
+            },
             "wtc_vorlaufsolltemperatur": {
                 "name": "WTC Flow Setpoint Temperature"
             },

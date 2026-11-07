@@ -294,6 +294,39 @@ class SensorTimestampTests(unittest.TestCase):
         )
 
 
+class SensorCounterTests(unittest.TestCase):
+    """Test the burner counter registers confirmed in JS-DE-Tech/hacs-weishaupt-lan."""
+
+    def _definition(self, key: str):
+        return next(d for d in sensors.WTC_SENSORS if d.key == key)
+
+    def test_burner_counter_addresses(self) -> None:
+        """Starts and hours use the confirmed 09/01/2920 and 09/01/2921 addresses."""
+        starts = self._definition("wtc_brennerstarts_gesamt")
+        hours = self._definition("wtc_betriebsstunden_gesamt")
+        self.assertEqual(
+            (starts.mi, starts.mx, starts.ox, starts.os, starts.vs),
+            (0x09, 0x01, 0x2920, 0x00, 2),
+        )
+        self.assertEqual(
+            (hours.mi, hours.mx, hours.ox, hours.os, hours.vs),
+            (0x09, 0x01, 0x2921, 0x00, 2),
+        )
+
+    def test_burner_counters_decode_unscaled(self) -> None:
+        """Raw values pass through unscaled: 31261 starts, 5604 hours."""
+        for key, raw in (
+            ("wtc_brennerstarts_gesamt", 31261),
+            ("wtc_betriebsstunden_gesamt", 5604),
+        ):
+            entity = sensor.WeishauptSensorEntity(
+                coordinator=SimpleNamespace(data={key: {"value_int": raw}}),
+                sensor_def=self._definition(key),
+                entry=SimpleNamespace(entry_id="entry-123"),
+            )
+            self.assertEqual(entity.native_value, raw)
+
+
 class SensorPrecisionTests(unittest.TestCase):
     """Test rounding of scaled sensor values."""
 

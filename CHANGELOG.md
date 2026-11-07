@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Feature: Add "Brennerstarts gesamt" (burner starts) and "Brennerbetriebsstunden gesamt" (burner operating hours) sensors from the CanApiJson counters `MI=09`, `MX=01`, `OX=0x2920` and `OX=0x2921` (raw values, unscaled). Requested in #20;
+
 ## 0.3.2 - 2026-11-01
 
 - Fix: Swap the register addresses of the "WTC Abgastemperatur" (now `OX=0x2537`, `OS=0x00`) and "WTC Rücklauftemperatur" (now `OX=0x2533`, `OS=0x02`) sensors. The values were reversed compared to the boiler's display (#18, thanks @cg089). The Modbus register references are unchanged.

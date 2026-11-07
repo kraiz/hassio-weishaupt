@@ -176,6 +176,12 @@
             "wtc_istleistung": {
                 "name": "WTC Istleistung"
             },
+            "wtc_brennerstarts_gesamt": {
+                "name": "Brennerstarts gesamt"
+            },
+            "wtc_betriebsstunden_gesamt": {
+                "name": "Brennerbetriebsstunden gesamt"
+            },
             "wtc_vorlaufsolltemperatur": {
                 "name": "WTC Vorlaufsolltemperatur"
             },

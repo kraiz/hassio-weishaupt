@@ -972,6 +972,35 @@ WTC_SENSORS: list[WeishauptSensorDefinition] = [
         precision=0,  # Round to whole percent, matching the boiler display
     ),
     WeishauptSensorDefinition(
+        # Not part of the Modbus table
+        key="wtc_brennerstarts_gesamt",
+        name="Brennerstarts gesamt",
+        mi=0x09,
+        mx=0x01,
+        ox=0x2920,
+        os=0x00,
+        vs=2,
+        group=WeishauptDeviceGroup.WTC,
+        modbus_reg="",
+        icon="mdi:counter",
+        state_class=SensorStateClass.TOTAL_INCREASING,
+    ),
+    WeishauptSensorDefinition(
+        # Not part of the Modbus table; same caveat as wtc_brennerstarts_gesamt.
+        key="wtc_betriebsstunden_gesamt",
+        name="Brennerbetriebsstunden gesamt",
+        mi=0x09,
+        mx=0x01,
+        ox=0x2921,
+        os=0x00,
+        vs=2,
+        group=WeishauptDeviceGroup.WTC,
+        modbus_reg="",
+        icon="mdi:timer-outline",
+        unit=UnitOfTime.HOURS,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+    ),
+    WeishauptSensorDefinition(
         key="wtc_vorlaufsolltemperatur",
         name="WTC Vorlaufsolltemperatur",
         mi=0x07,
