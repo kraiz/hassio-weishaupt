@@ -81,6 +81,35 @@ The integration provides sensors across these device groups:
 - Wärmeleistung VPT
 - Tageswärmemenge Vortag (Gesamt / Heizen / Warmwasser)
 
+
+### Additional read-only HK1 settings (hardware-validated)
+
+These 10 HK1 values were read on a Weishaupt WTC-GW 15-B and compared with
+controller settings. The two heating-curve sensors are contributed separately
+in [PR #21](https://github.com/kraiz/hassio-weishaupt/pull/21).
+
+| Setting | OX | Observed value |
+|---|---|---|
+| Flow heating limit | `0x25C7` | 8.0 °C (A-B-A verified) |
+| Outdoor frost threshold | `0x2554` | 0.0 °C |
+| Heating optimization | `0x25A3` | Off (`0`) |
+| Building construction | `0x256E` | Light (`2`) |
+| Minimum flow target | `0x251B` | 15.0 °C |
+| Maximum flow target | `0x251C` | 80.0 °C |
+| Summer/winter switching threshold | `0x257B` | 16.0 °C |
+| Outdoor level raise | `0x2581` | −20.0 °C (Off on tested controller) |
+| Domestic hot water priority | `0x2537` | Vorrang (`0`) |
+| Room-target heating limit | `0x257C` | Ein (`1`) |
+
+**Protocol quirk:** `0x251B`, `0x251C` and `0x257B` require GET requests
+with `VS=1` and respond with `VS=2`. Their definitions use `request_vs=1`
+while `vs=2` keeps the expected response size. Responses for these overrides
+are checked against the full register address and response length.
+
+All new sensors are read-only. Mappings for enum values not observed on the
+reference installation and compatibility with other firmware remain unverified.
+No heating-system settings were changed through CanApiJson during validation.
+
 ### Heizkreis 2 (HK2 / EM-HK) — Modbus 1030-1046
 
 Heizkreis 1 is exposed through the Systemgerät (`MX=0`); these entities expose

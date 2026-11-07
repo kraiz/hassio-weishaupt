@@ -208,5 +208,48 @@ class ReadAnsweredKeysTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(answered, {"present", "absent"})
 
 
+
+class HK1RequestSizeTests(unittest.IsolatedAsyncioTestCase):
+    """Read-only HK1 response length may differ from the GET request length."""
+
+    async def test_hk1_canonical_two_byte_reply(self) -> None:
+        class Capture(api.WeishauptApiClient):
+            def __init__(self, reply):
+                super().__init__("wem-sg", "admin", "unused", min_request_interval=0)
+                self.reply = reply
+                self.payloads = []
+
+            async def _post(self, payload):
+                self.payloads.append(payload)
+                return self.reply
+
+        for ox, raw in ((0x251B, 150), (0x251C, 800), (0x257B, 160)):
+            with self.subTest(ox=ox):
+                response = {"CAPI": {"N01": {
+                    "VG": f"020200{ox:04x}020002{raw:04x}"
+                }}}
+                client = Capture(response)
+                spec = {"key": "temperature", "mi": 2, "mx": 0,
+                        "ox": ox, "os": 2, "vs": 2, "request_vs": 1}
+                results, answered = await client.read_parameters_with_status([spec])
+                self.assertEqual(results["temperature"]["value_int"], raw)
+                self.assertEqual(answered, {"temperature"})
+                self.assertEqual(client.payloads[0]["CAPI"]["N01"]["VG"],
+                                 f"010200{ox:04x}02000100")
+
+    async def test_hk1_rejects_wrong_address_or_response_length(self) -> None:
+        class ReplyClient(api.WeishauptApiClient):
+            async def _post(self, payload):
+                return {"CAPI": {"N01": {"VG": self.frame}}}
+
+        client = ReplyClient("wem-sg", "admin", "unused", min_request_interval=0)
+        spec = {"key": "temperature", "mi": 2, "mx": 0,
+                "ox": 0x251B, "os": 2, "vs": 2, "request_vs": 1}
+        for frame in ("020200251c0200020096", "020200251b02000196"):
+            client.frame = frame
+            results, answered = await client.read_parameters_with_status([spec])
+            self.assertEqual(results, {})
+            self.assertEqual(answered, set())
+
 if __name__ == "__main__":
     unittest.main()

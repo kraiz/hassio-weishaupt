@@ -264,6 +264,41 @@ class SensorDefinitionTests(unittest.TestCase):
         )
 
 
+class HK1AdditionalSensorTests(unittest.TestCase):
+
+    def test_hardware_validated_hk1_additional_settings(self) -> None:
+        """Validate register metadata and exposed Home Assistant values."""
+        expected = {
+            "sg_vorlaufsolltemperatur_heizgrenze_hk1": (0x25C7, 2, 8.0, 80),
+            "sg_frostschutz_aussentemperatur_hk1": (0x2554, 2, 0.0, 0),
+            "sg_aufheizoptimierung_hk1": (0x25A3, 1, "Aus", 0),
+            "sg_gebaeudebauweise_hk1": (0x256E, 1, "leicht", 2),
+            "sg_vorlaufsolltemperatur_minimal_hk1": (0x251B, 2, 15.0, 150),
+            "sg_vorlaufsolltemperatur_maximal_hk1": (0x251C, 2, 80.0, 800),
+            "sg_sowi_umschalttemperatur_hk1": (0x257B, 2, 16.0, 160),
+            "sg_niveauanhebung_aussentemperatur_hk1": (0x2581, 2, -20.0, 0xFF38),
+            "sg_warmwasserprioritaet_hk1": (0x2537, 1, "Vorrang", 0),
+            "sg_raumsolltemperatur_heizgrenze_hk1": (0x257C, 1, "Ein", 1),
+        }
+        for key, (ox, vs, expected_value, raw) in expected.items():
+            with self.subTest(key=key):
+                matches = [d for d in sensors.SG_SENSORS if d.key == key]
+                self.assertEqual(len(matches), 1)
+                d = matches[0]
+                self.assertEqual((d.mi, d.mx, d.ox, d.os, d.vs),
+                                 (2, 0, ox, 2, vs))
+                self.assertTrue(d.poll)
+                if ox in (0x251B, 0x251C, 0x257B):
+                    self.assertEqual(d.request_vs, 1)
+                entity = sensor.WeishauptSensorEntity(
+                    coordinator=SimpleNamespace(data={key: {
+                        "value_int": raw, "value_hex": f"{raw:0{vs*2}x}"}}),
+                    sensor_def=d,
+                    entry=SimpleNamespace(entry_id="test"),
+                )
+                self.assertEqual(entity.native_value, expected_value)
+
+
 class SensorTimestampTests(unittest.TestCase):
     """Test the consolidated device timestamp entity."""
 
