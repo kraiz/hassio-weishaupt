@@ -1,8 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.3.3 - 2026-11-07
 
-- Feature: Add "Brennerstarts gesamt" (burner starts) and "Brennerbetriebsstunden gesamt" (burner operating hours) sensors from the CanApiJson counters `MI=09`, `MX=01`, `OX=0x2920` and `OX=0x2921` (raw values, unscaled). Requested in #20;
+- Feature: Add "Brennerstarts gesamt" (burner starts) and "Brennerbetriebsstunden gesamt" (burner operating hours) sensors from the CanApiJson counters `MI=09`, `MX=01`, `OX=0x2920` and `OX=0x2921` (raw values, unscaled). Requested in #20.
+- Feature: Add "Zeit bis Wartung" (`OX=0x2641`) and "Wartungsintervall" (`OX=0x2642`) diagnostic sensors (`MI=09`, `MX=01`, `VS=2`, unit h). Disabled by default; enable them in the entity registry. Addresses confirmed in [JS-DE-Tech/hacs-weishaupt-lan](https://github.com/JS-DE-Tech/hacs-weishaupt-lan).
 
 ## 0.3.2 - 2026-11-01
 
