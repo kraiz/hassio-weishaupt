@@ -182,6 +182,12 @@
             "wtc_betriebsstunden_gesamt": {
                 "name": "Ore di funzionamento bruciatore totali"
             },
+            "wtc_zeit_bis_wartung": {
+                "name": "Tempo fino alla manutenzione"
+            },
+            "wtc_wartungsintervall": {
+                "name": "Intervallo di manutenzione"
+            },
             "wtc_vorlaufsolltemperatur": {
                 "name": "Temperatura di Mandata Impostata WTC"
             },

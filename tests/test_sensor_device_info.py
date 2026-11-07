@@ -89,6 +89,7 @@ sys.modules["homeassistant.core"] = core
 
 const = types.ModuleType("homeassistant.const")
 setattr(const, "PERCENTAGE", "%")
+setattr(const, "EntityCategory", SimpleNamespace(DIAGNOSTIC="diagnostic", CONFIG="config"))
 setattr(const, "UnitOfEnergy", SimpleNamespace(KILO_WATT_HOUR="kWh"))
 setattr(const, "UnitOfPower", SimpleNamespace(KILO_WATT="kW"))
 setattr(const, "UnitOfPressure", SimpleNamespace(BAR="bar"))
@@ -312,6 +313,22 @@ class SensorCounterTests(unittest.TestCase):
             (hours.mi, hours.mx, hours.ox, hours.os, hours.vs),
             (0x09, 0x01, 0x2921, 0x00, 2),
         )
+
+    def test_maintenance_registers_are_diagnostic_and_disabled(self) -> None:
+        """Maintenance hours and interval use 09/01/2641 and 09/01/2642, disabled by default."""
+        remaining = self._definition("wtc_zeit_bis_wartung")
+        interval = self._definition("wtc_wartungsintervall")
+        self.assertEqual(
+            (remaining.mi, remaining.mx, remaining.ox, remaining.os, remaining.vs),
+            (0x09, 0x01, 0x2641, 0x00, 2),
+        )
+        self.assertEqual(
+            (interval.mi, interval.mx, interval.ox, interval.os, interval.vs),
+            (0x09, 0x01, 0x2642, 0x00, 2),
+        )
+        for definition in (remaining, interval):
+            self.assertEqual(definition.entity_category, "diagnostic")
+            self.assertFalse(definition.entity_registry_enabled_default)
 
     def test_burner_counters_decode_unscaled(self) -> None:
         """Raw values pass through unscaled: 31261 starts, 5604 hours."""

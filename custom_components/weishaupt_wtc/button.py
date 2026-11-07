@@ -6,6 +6,7 @@ Exposes one-shot writable registers as press buttons in Home Assistant.
 from __future__ import annotations
 
 import logging
+from functools import cached_property
 
 from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
@@ -15,6 +16,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
+from .coordinator import WeishauptDataUpdateCoordinator
 from .sensor import DEVICE_GROUP_MODELS, DEVICE_GROUP_NAMES, _device_identifier, _is_group_active, _via_device_id
 from .sensors import ALL_SENSORS, WeishauptDeviceGroup, WeishauptSensorDefinition
 
@@ -46,14 +48,14 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class WeishauptButtonEntity(CoordinatorEntity, ButtonEntity):
+class WeishauptButtonEntity(CoordinatorEntity[WeishauptDataUpdateCoordinator], ButtonEntity):  # type: ignore[override]
     """Representation of a one-shot Weishaupt writable register as a Button."""
 
     _attr_has_entity_name = True
 
     def __init__(
         self,
-        coordinator,
+        coordinator: WeishauptDataUpdateCoordinator,
         sensor_def: WeishauptSensorDefinition,
         entry: ConfigEntry,
     ) -> None:
@@ -65,7 +67,7 @@ class WeishauptButtonEntity(CoordinatorEntity, ButtonEntity):
         self._attr_translation_key = sensor_def.key
         self._attr_icon = sensor_def.icon
 
-    @property
+    @cached_property
     def device_info(self) -> DeviceInfo:
         """Return device info so the entity is attached to the correct device."""
         group = self._sensor_def.group

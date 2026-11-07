@@ -6,6 +6,7 @@ Exposes writable registers with value maps as dropdowns in Home Assistant.
 from __future__ import annotations
 
 import logging
+from functools import cached_property
 from typing import Any
 
 from homeassistant.components.select import SelectEntity
@@ -16,6 +17,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
+from .coordinator import WeishauptDataUpdateCoordinator
 from .sensor import DEVICE_GROUP_MODELS, DEVICE_GROUP_NAMES, _device_identifier, _is_group_active, _via_device_id
 from .sensors import ALL_SENSORS, WeishauptDeviceGroup, WeishauptSensorDefinition
 
@@ -46,14 +48,14 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class WeishauptSelectEntity(CoordinatorEntity, SelectEntity):
+class WeishauptSelectEntity(CoordinatorEntity[WeishauptDataUpdateCoordinator], SelectEntity):  # type: ignore[override]
     """Representation of a writable Weishaupt value-map as a Select."""
 
     _attr_has_entity_name = True
 
     def __init__(
         self,
-        coordinator,
+        coordinator: WeishauptDataUpdateCoordinator,
         sensor_def: WeishauptSensorDefinition,
         entry: ConfigEntry,
     ) -> None:
@@ -65,7 +67,7 @@ class WeishauptSelectEntity(CoordinatorEntity, SelectEntity):
         self._attr_translation_key = sensor_def.key
         self._attr_icon = sensor_def.icon
 
-    @property
+    @cached_property
     def device_info(self) -> DeviceInfo:
         """Return device info so the entity is attached to the correct device."""
         group = self._sensor_def.group
@@ -81,7 +83,7 @@ class WeishauptSelectEntity(CoordinatorEntity, SelectEntity):
                 info["via_device_id"] = via_device_id
         return info
 
-    @property
+    @cached_property
     def options(self) -> list[str]:
         """Return available options for the select (ordered by raw value)."""
         if not self._sensor_def.value_map:
@@ -92,12 +94,15 @@ class WeishauptSelectEntity(CoordinatorEntity, SelectEntity):
         ]
 
     @property
-    def current_option(self) -> str | None:
+    def current_option(self) -> str | None:  # type: ignore[override]
         """Return currently selected option string, or None if unknown."""
         if self.coordinator.data is None:
             return None
 
-        data = self.coordinator.data.get(self._sensor_def.key)
+        coordinator_data = self.coordinator.data
+        if coordinator_data is None:
+            return None
+        data = coordinator_data.get(self._sensor_def.key)
         if not data:
             return None
 
@@ -105,7 +110,7 @@ class WeishauptSelectEntity(CoordinatorEntity, SelectEntity):
         if raw is None:
             return None
 
-        return self._sensor_def.value_map.get(raw)
+        return (self._sensor_def.value_map or {}).get(raw)
 
     async def async_select_option(self, option: Any) -> None:  # type: ignore[override]
         """Write the chosen option back to the device and refresh data."""

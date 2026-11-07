@@ -182,6 +182,12 @@
             "wtc_betriebsstunden_gesamt": {
                 "name": "Brennerbetriebsstunden gesamt"
             },
+            "wtc_zeit_bis_wartung": {
+                "name": "Zeit bis Wartung"
+            },
+            "wtc_wartungsintervall": {
+                "name": "Wartungsintervall"
+            },
             "wtc_vorlaufsolltemperatur": {
                 "name": "WTC Vorlaufsolltemperatur"
             },

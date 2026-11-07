@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import logging
+from functools import cached_property
 from typing import Any
 from zoneinfo import ZoneInfo
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -143,8 +145,6 @@ class WeishauptSensorEntity(
             self._attr_suggested_display_precision = sensor_def.precision
 
         if sensor_def.entity_category == "diagnostic":
-            from homeassistant.helpers.entity import EntityCategory
-
             self._attr_entity_category = EntityCategory.DIAGNOSTIC
             if sensor_def.entity_registry_enabled_default is not None:
                 self._attr_entity_registry_enabled_default = sensor_def.entity_registry_enabled_default
@@ -152,11 +152,9 @@ class WeishauptSensorEntity(
                 # Disable diagnostic sensors by default in the entity registry
                 self._attr_entity_registry_enabled_default = False
         elif sensor_def.entity_category == "config":
-            from homeassistant.helpers.entity import EntityCategory
-
             self._attr_entity_category = EntityCategory.CONFIG
 
-    @property
+    @cached_property
     def device_info(self) -> DeviceInfo:
         """Return device info for this sensor."""
         group = self._sensor_def.group
@@ -174,7 +172,7 @@ class WeishauptSensorEntity(
         return device_info
 
     @property
-    def available(self) -> bool:
+    def available(self) -> bool:  # type: ignore[override]
         """Return True if the sensor data is available."""
         if self._sensor_def.key == "sg_device_time":
             required_keys = [
@@ -203,7 +201,7 @@ class WeishauptSensorEntity(
         self.async_write_ha_state()
 
     @property
-    def native_value(self) -> Any:
+    def native_value(self) -> Any:  # type: ignore[override]
         """Return the sensor value."""
         if self.coordinator.data is None:
             return None
@@ -278,9 +276,9 @@ class WeishauptSensorEntity(
         return raw_value
 
     @property
-    def extra_state_attributes(self) -> dict[str, Any]:
+    def extra_state_attributes(self) -> dict[str, Any]:  # type: ignore[override]
         """Return additional state attributes."""
-        attrs = {
+        attrs: dict[str, Any] = {
             "modbus_register": self._sensor_def.modbus_reg,
             "device_group": self._sensor_def.group.value,
         }

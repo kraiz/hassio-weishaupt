@@ -182,6 +182,12 @@
             "wtc_betriebsstunden_gesamt": {
                 "name": "Burner Operating Hours Total"
             },
+            "wtc_zeit_bis_wartung": {
+                "name": "Time Until Maintenance"
+            },
+            "wtc_wartungsintervall": {
+                "name": "Maintenance Interval"
+            },
             "wtc_vorlaufsolltemperatur": {
                 "name": "WTC Flow Setpoint Temperature"
             },

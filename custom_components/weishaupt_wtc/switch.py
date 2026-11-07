@@ -6,6 +6,7 @@ Exposes the Warmwasser on/off object (MI 03 / OX 0x2520) as a Home Assistant swi
 from __future__ import annotations
 
 import logging
+from functools import cached_property
 from typing import Any
 
 from homeassistant.components.switch import SwitchEntity
@@ -16,6 +17,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
+from .coordinator import WeishauptDataUpdateCoordinator
 from .sensor import DEVICE_GROUP_MODELS, DEVICE_GROUP_NAMES, _device_identifier, _is_group_active, _via_device_id
 from .sensors import ALL_SENSORS, WeishauptDeviceGroup, WeishauptSensorDefinition
 
@@ -48,14 +50,14 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class WeishauptWarmwasserSwitch(CoordinatorEntity, SwitchEntity):
+class WeishauptWarmwasserSwitch(CoordinatorEntity[WeishauptDataUpdateCoordinator], SwitchEntity):  # type: ignore[override]
     """Warmwasser on/off (Betriebsart Ein/Aus) as a switch."""
 
     _attr_has_entity_name = True
 
     def __init__(
         self,
-        coordinator,
+        coordinator: WeishauptDataUpdateCoordinator,
         sensor_def: WeishauptSensorDefinition,
         entry: ConfigEntry,
     ) -> None:
@@ -67,7 +69,7 @@ class WeishauptWarmwasserSwitch(CoordinatorEntity, SwitchEntity):
         self._attr_translation_key = sensor_def.key
         self._attr_icon = sensor_def.icon
 
-    @property
+    @cached_property
     def device_info(self) -> DeviceInfo:
         """Return device info so the entity is attached to the correct device."""
         group = self._sensor_def.group
@@ -84,7 +86,7 @@ class WeishauptWarmwasserSwitch(CoordinatorEntity, SwitchEntity):
         return info
 
     @property
-    def is_on(self) -> bool | None:
+    def is_on(self) -> bool | None:  # type: ignore[override]
         """Return True for Ein, False for Aus, None for any other value."""
         data = (self.coordinator.data or {}).get(self._sensor_def.key)
         if not data:
