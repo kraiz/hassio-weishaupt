@@ -59,6 +59,8 @@ http://admin:Admin123@wem-sg/ajax/CanApiJson.json
 The integration provides sensors across these device groups:
 
 ### Systemgerät (SG) — Modbus 100-155
+- Heizkurvensteilheit HK1 (read-only, `0x254B`)
+- Heizkurve Parallelverschiebung HK1 (read-only, `0x25AD`, 0.1 K)
 - Betriebsart HK1 (Vorgabe / aktuell)
 - So/Wi Umschaltung, Status HK1
 - Raumsolltemperaturen (Komfort / Normal / Absenk / aktuell)

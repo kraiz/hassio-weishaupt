@@ -196,6 +196,36 @@ PUMPE_MAP = {
 
 SG_SENSORS: list[WeishauptSensorDefinition] = [
     # --- Heating circuit 1 settings (via SG) ---
+    # HK1 heating curve slope – hardware validated (read-only)
+    WeishauptSensorDefinition(
+        key="sg_heizkurvensteilheit_hk1",
+        name="Heizkurvensteilheit HK1",
+        mi=0x02,
+        mx=0x00,
+        ox=0x254B,
+        os=0x02,
+        vs=2,
+        group=WeishauptDeviceGroup.SG,
+        modbus_reg="",
+        scale=0.1,
+        icon="mdi:chart-bell-curve",
+    ),
+    # HK1 heating curve parallel shift – hardware validated (read-only)
+    WeishauptSensorDefinition(
+        key="sg_heizkurve_parallelverschiebung_hk1",
+        name="Heizkurve Parallelverschiebung HK1",
+        mi=0x02,
+        mx=0x00,
+        ox=0x25AD,
+        os=0x02,
+        vs=2,
+        group=WeishauptDeviceGroup.SG,
+        modbus_reg="",
+        unit="K",
+        scale=0.1,
+        signed=True,
+        icon="mdi:chart-bell-curve",
+    ),
     WeishauptSensorDefinition(
         key="sg_betriebsart_hk1_vorgabe",
         name="Betriebsart HK1 Vorgabe",
