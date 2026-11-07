@@ -205,6 +205,71 @@ switch = load_module(
 class SensorDefinitionTests(unittest.TestCase):
     """Test register metadata used to poll sensor values."""
 
+    def test_hk1_heating_curve_registers(self) -> None:
+        """Both HK1 curve settings use hardware-validated registers."""
+        expected = {
+            "sg_heizkurvensteilheit_hk1": (0x254B, None),
+            "sg_heizkurve_parallelverschiebung_hk1": (0x25AD, "K"),
+        }
+
+        for key, (object_index, unit) in expected.items():
+            matches = [
+                definition
+                for definition in sensors.SG_SENSORS
+                if definition.key == key
+            ]
+            self.assertEqual(len(matches), 1)
+            definition = matches[0]
+
+            self.assertEqual(
+                (
+                    definition.mi,
+                    definition.mx,
+                    definition.ox,
+                    definition.os,
+                    definition.vs,
+                ),
+                (0x02, 0x00, object_index, 0x02, 2),
+            )
+            self.assertEqual(
+                definition.group,
+                sensors.WeishauptDeviceGroup.SG,
+            )
+            self.assertEqual(definition.scale, 0.1)
+            self.assertEqual(definition.unit, unit)
+            self.assertTrue(definition.poll)
+
+            for raw, expected_value in (
+                (85, 8.5),
+                (90, 9.0),
+                (80, 8.0),
+            ):
+                entity = sensor.WeishauptSensorEntity(
+                    coordinator=SimpleNamespace(
+                        data={key: {"value_int": raw}}
+                    ),
+                    sensor_def=definition,
+                    entry=SimpleNamespace(entry_id="entry-123"),
+                )
+                self.assertEqual(entity.native_value, expected_value)
+
+        parallel = next(
+            definition
+            for definition in sensors.SG_SENSORS
+            if definition.key == "sg_heizkurve_parallelverschiebung_hk1"
+        )
+        self.assertTrue(parallel.signed)
+
+        # Software decoding only: negative hardware values are unverified.
+        entity = sensor.WeishauptSensorEntity(
+            coordinator=SimpleNamespace(
+                data={parallel.key: {"value_int": 0xFFFB}}
+            ),
+            sensor_def=parallel,
+            entry=SimpleNamespace(entry_id="entry-123"),
+        )
+        self.assertEqual(entity.native_value, -0.5)
+
     def test_hk2_definitions_use_second_module_index(self) -> None:
         """Expose the documented HK2 registers through module index one."""
         self.assertEqual(
