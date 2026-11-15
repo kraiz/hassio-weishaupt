@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.4 - 2026-11-15
+
+- Feature: Add read-only "Heizkurvensteilheit HK1" (heating curve slope, `MI=02`, `MX=00`, `OX=0x254B`, `OS=02`, scale 0.1) and "Heizkurve Parallelverschiebung HK1" (heating curve parallel shift, `OX=0x25AD`, signed, scale 0.1, unit K) sensors. Both were checked against the boiler controller settings on a WTC-GW 15-B. Negative parallel-shift values are decoded but not yet verified on hardware. Thanks @ChristophKomenda (#21).
+- Feature: Add ten read-only HK1 settings, all validated on a WTC-GW 15-B: "Vorlaufsolltemperatur Heizgrenze" (`0x25C7`), "Frostschutz Außentemperatur" (`0x2554`), "Aufheizoptimierung" (`0x25A3`), "Gebäudebauweise" (`0x256E`), "Vorlaufsolltemperatur minimal" (`0x251B`), "Vorlaufsolltemperatur maximal" (`0x251C`), "So/Wi Umschalttemperatur" (`0x257B`), "Niveauanhebung Außentemperatur" (`0x2581`), "Warmwasserpriorität" (`0x2537`) and "Raumsolltemperatur Heizgrenze" (`0x257C`). Thanks @ChristophKomenda (#22).
+- Change: Some CanApiJson objects answer with a 2-byte value to a 1-byte request. The three affected sensors (`0x251B`, `0x251C`, `0x257B`) now send `VS=1` and expect `VS=2`. The new `request_vs` field on sensor definitions only applies to these overrides; the reply check is skipped for all other sensors.
+- Behaviour: "Niveauanhebung Außentemperatur HK1" (`0x2581`) reports the "Off" setting (raw −200, −20.0 °C) as unavailable instead of −20 °C.
+- Behaviour: The value labels for "Warmwasserpriorität HK1" (`0x2537`) and "Raumsolltemperatur Heizgrenze HK1" (`0x257C`) list only the states observed on the reference installation (`0 = Vorrang`, `1 = Ein`). Other raw values show as "Unknown (n)".
+- All new sensors are read-only and in the Systemgerät (SG) device group. No write requests are sent.
+- Note: The new HK1 sensors have been verified on one WTC-GW 15-B only. Other boilers and firmware versions are unverified.
+
 ## 0.3.3 - 2026-11-07
 
 - Feature: Add "Brennerstarts gesamt" (burner starts) and "Brennerbetriebsstunden gesamt" (burner operating hours) sensors from the CanApiJson counters `MI=09`, `MX=01`, `OX=0x2920` and `OX=0x2921` (raw values, unscaled). Requested in #20.
