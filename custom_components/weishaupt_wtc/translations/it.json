@@ -316,6 +316,42 @@
             },
             "sol_solarertrag_vortag": {
                 "name": "Resa Solare Giorno Precedente"
+            },
+            "sg_heizkurvensteilheit_hk1": {
+                "name": "CR1 Pendenza curva climatica"
+            },
+            "sg_heizkurve_parallelverschiebung_hk1": {
+                "name": "CR1 Spostamento parallelo curva climatica"
+            },
+            "sg_vorlaufsolltemperatur_heizgrenze_hk1": {
+                "name": "CR1 Temperatura mandata limite riscaldamento"
+            },
+            "sg_frostschutz_aussentemperatur_hk1": {
+                "name": "CR1 Protezione antigelo temperatura esterna"
+            },
+            "sg_aufheizoptimierung_hk1": {
+                "name": "CR1 Ottimizzazione riscaldamento rapido"
+            },
+            "sg_gebaeudebauweise_hk1": {
+                "name": "CR1 Tipo di costruzione edificio"
+            },
+            "sg_vorlaufsolltemperatur_minimal_hk1": {
+                "name": "CR1 Temperatura mandata minima"
+            },
+            "sg_vorlaufsolltemperatur_maximal_hk1": {
+                "name": "CR1 Temperatura mandata massima"
+            },
+            "sg_sowi_umschalttemperatur_hk1": {
+                "name": "CR1 Temperatura commutazione estate/inverno"
+            },
+            "sg_niveauanhebung_aussentemperatur_hk1": {
+                "name": "CR1 Innalzamento livello temperatura esterna"
+            },
+            "sg_warmwasserprioritaet_hk1": {
+                "name": "CR1 Priorità acqua calda"
+            },
+            "sg_raumsolltemperatur_heizgrenze_hk1": {
+                "name": "CR1 Temperatura ambiente limite riscaldamento"
             }
         },
         "button": {

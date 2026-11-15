@@ -316,6 +316,42 @@
             },
             "sol_solarertrag_vortag": {
                 "name": "Solarertrag Vortag"
+            },
+            "sg_heizkurvensteilheit_hk1": {
+                "name": "Heizkurvensteilheit HK1"
+            },
+            "sg_heizkurve_parallelverschiebung_hk1": {
+                "name": "Heizkurve Parallelverschiebung HK1"
+            },
+            "sg_vorlaufsolltemperatur_heizgrenze_hk1": {
+                "name": "Vorlaufsolltemperatur Heizgrenze HK1"
+            },
+            "sg_frostschutz_aussentemperatur_hk1": {
+                "name": "Frostschutz Außentemperatur HK1"
+            },
+            "sg_aufheizoptimierung_hk1": {
+                "name": "Aufheizoptimierung HK1"
+            },
+            "sg_gebaeudebauweise_hk1": {
+                "name": "Gebäudebauweise HK1"
+            },
+            "sg_vorlaufsolltemperatur_minimal_hk1": {
+                "name": "Vorlaufsolltemperatur minimal HK1"
+            },
+            "sg_vorlaufsolltemperatur_maximal_hk1": {
+                "name": "Vorlaufsolltemperatur maximal HK1"
+            },
+            "sg_sowi_umschalttemperatur_hk1": {
+                "name": "So/Wi Umschalttemperatur HK1"
+            },
+            "sg_niveauanhebung_aussentemperatur_hk1": {
+                "name": "Niveauanhebung Außentemperatur HK1"
+            },
+            "sg_warmwasserprioritaet_hk1": {
+                "name": "Warmwasserpriorität HK1"
+            },
+            "sg_raumsolltemperatur_heizgrenze_hk1": {
+                "name": "Raumsolltemperatur Heizgrenze HK1"
             }
         },
         "button": {

@@ -316,6 +316,42 @@
             },
             "sol_solarertrag_vortag": {
                 "name": "Solar Yield Previous Day"
+            },
+            "sg_heizkurvensteilheit_hk1": {
+                "name": "HC1 Heating Curve Slope"
+            },
+            "sg_heizkurve_parallelverschiebung_hk1": {
+                "name": "HC1 Heating Curve Parallel Shift"
+            },
+            "sg_vorlaufsolltemperatur_heizgrenze_hk1": {
+                "name": "HC1 Flow Setpoint Heating Limit"
+            },
+            "sg_frostschutz_aussentemperatur_hk1": {
+                "name": "HC1 Frost Protection Outdoor Temperature"
+            },
+            "sg_aufheizoptimierung_hk1": {
+                "name": "HC1 Heat-up Optimisation"
+            },
+            "sg_gebaeudebauweise_hk1": {
+                "name": "HC1 Building Construction"
+            },
+            "sg_vorlaufsolltemperatur_minimal_hk1": {
+                "name": "HC1 Minimum Flow Setpoint"
+            },
+            "sg_vorlaufsolltemperatur_maximal_hk1": {
+                "name": "HC1 Maximum Flow Setpoint"
+            },
+            "sg_sowi_umschalttemperatur_hk1": {
+                "name": "HC1 Summer/Winter Switchover Temperature"
+            },
+            "sg_niveauanhebung_aussentemperatur_hk1": {
+                "name": "HC1 Outdoor Temperature Level Raise"
+            },
+            "sg_warmwasserprioritaet_hk1": {
+                "name": "HC1 DHW Priority"
+            },
+            "sg_raumsolltemperatur_heizgrenze_hk1": {
+                "name": "HC1 Room Setpoint Heating Limit"
             }
         },
         "button": {
