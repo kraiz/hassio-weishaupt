@@ -330,7 +330,6 @@ class SensorDefinitionTests(unittest.TestCase):
 
 
 class HK1AdditionalSensorTests(unittest.TestCase):
-
     def test_hardware_validated_hk1_additional_settings(self) -> None:
         """Validate register metadata and exposed Home Assistant values."""
         expected = {
@@ -341,7 +340,7 @@ class HK1AdditionalSensorTests(unittest.TestCase):
             "sg_vorlaufsolltemperatur_minimal_hk1": (0x251B, 2, 15.0, 150),
             "sg_vorlaufsolltemperatur_maximal_hk1": (0x251C, 2, 80.0, 800),
             "sg_sowi_umschalttemperatur_hk1": (0x257B, 2, 16.0, 160),
-            "sg_niveauanhebung_aussentemperatur_hk1": (0x2581, 2, -20.0, 0xFF38),
+            "sg_niveauanhebung_aussentemperatur_hk1": (0x2581, 2, None, 0xFF38),
             "sg_warmwasserprioritaet_hk1": (0x2537, 1, "Vorrang", 0),
             "sg_raumsolltemperatur_heizgrenze_hk1": (0x257C, 1, "Ein", 1),
         }

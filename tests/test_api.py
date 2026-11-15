@@ -208,7 +208,6 @@ class ReadAnsweredKeysTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(answered, {"present", "absent"})
 
 
-
 class HK1RequestSizeTests(unittest.IsolatedAsyncioTestCase):
     """Read-only HK1 response length may differ from the GET request length."""
 
@@ -250,6 +249,20 @@ class HK1RequestSizeTests(unittest.IsolatedAsyncioTestCase):
             results, answered = await client.read_parameters_with_status([spec])
             self.assertEqual(results, {})
             self.assertEqual(answered, set())
+
+    async def test_ordinary_sensor_reply_is_not_filtered(self) -> None:
+        """Sensors without request_vs keep accepting any response, as before."""
+        class ReplyClient(api.WeishauptApiClient):
+            async def _post(self, payload):
+                return {"CAPI": {"N01": {"VG": self.frame}}}
+
+        client = ReplyClient("wem-sg", "admin", "unused", min_request_interval=0)
+        spec = {"key": "ordinary", "mi": 2, "mx": 0,
+                "ox": 0x2533, "os": 2, "vs": 2, "request_vs": None}
+        client.frame = "020200251c0200020096"
+        results, answered = await client.read_parameters_with_status([spec])
+        self.assertEqual(answered, {"ordinary"})
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -99,7 +99,7 @@ in [PR #21](https://github.com/kraiz/hassio-weishaupt/pull/21).
 | Minimum flow target | `0x251B` | 15.0 °C |
 | Maximum flow target | `0x251C` | 80.0 °C |
 | Summer/winter switching threshold | `0x257B` | 16.0 °C |
-| Outdoor level raise | `0x2581` | −20.0 °C (Off on tested controller) |
+| Outdoor level raise | `0x2581` | Off (−20.0 °C raw, shown as unavailable) |
 | Domestic hot water priority | `0x2537` | Vorrang (`0`) |
 | Room-target heating limit | `0x257C` | Ein (`1`) |
 
