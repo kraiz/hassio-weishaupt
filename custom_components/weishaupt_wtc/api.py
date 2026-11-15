@@ -230,7 +230,7 @@ class WeishauptApiClient:
                     mx=param["mx"],
                     ox=param["ox"],
                     os_val=param["os"],
-                    vs=param["vs"],
+                    vs=param.get("request_vs") or param["vs"],
                 )
                 capi[f"N{i + 1:02d}"] = {"VG": vg}
 
@@ -287,6 +287,12 @@ class WeishauptApiClient:
 
                 # Check it's a proper response
                 if parsed["cmd"] == CMD_RESPONSE:
+                    if param.get("request_vs") is not None and any(
+                        parsed[field] != param[field]
+                        for field in ("mi", "mx", "ox", "os", "vs")
+                    ):
+                        _LOGGER.debug("Discarding mismatched HK1 reply for %s", param["key"])
+                        continue
                     answered.add(param["key"])
                     results[param["key"]] = parsed
 

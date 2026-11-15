@@ -259,6 +259,9 @@ class WeishauptSensorEntity(
             if raw_value > 0x7FFFFFFF:
                 raw_value -= 0x100000000
 
+        if raw_value in sensor_def.none_values:
+            return None
+
         if sensor_def.key == "sg_fehler_warnung_status":
             return decode_fault_status(raw_value)
 
