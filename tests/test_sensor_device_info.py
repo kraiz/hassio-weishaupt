@@ -330,6 +330,19 @@ class SensorDefinitionTests(unittest.TestCase):
 
 
 class HK1AdditionalSensorTests(unittest.TestCase):
+    def test_gebaeudebauweise_labels(self) -> None:
+        """Building construction class 1-5 maps to its documented label."""
+        d = next(d for d in sensors.SG_SENSORS if d.key == "sg_gebaeudebauweise_hk1")
+        labels = {1: "sehr leicht", 2: "leicht", 3: "mittel", 4: "schwer", 5: "sehr schwer"}
+        for raw, label in labels.items():
+            with self.subTest(raw=raw):
+                entity = sensor.WeishauptSensorEntity(
+                    coordinator=SimpleNamespace(data={d.key: {"value_int": raw, "value_hex": f"{raw:02x}"}}),
+                    sensor_def=d,
+                    entry=SimpleNamespace(entry_id="test"),
+                )
+                self.assertEqual(entity.native_value, label)
+
     def test_hardware_validated_hk1_additional_settings(self) -> None:
         """Validate register metadata and exposed Home Assistant values."""
         expected = {

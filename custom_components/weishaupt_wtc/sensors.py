@@ -254,7 +254,13 @@ SG_SENSORS: list[WeishauptSensorDefinition] = [
         vs=1,
         group=WeishauptDeviceGroup.SG,
         modbus_reg="",
-        value_map={2: "leicht"},
+        value_map={
+            1: "sehr leicht",
+            2: "leicht",
+            3: "mittel",
+            4: "schwer",
+            5: "sehr schwer",
+        },
         icon="mdi:home-thermometer",
     ),
     WeishauptSensorDefinition(
