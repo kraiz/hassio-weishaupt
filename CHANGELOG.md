@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fix: Read at most 4 frames per request (was 6). On some devices the Systemgerät answers only the first 4 frames of a request, and the entities behind frames 5 and 6 stayed unavailable (#25).
+
 ## 0.3.4 - 2026-11-15
 
 - Feature: Add read-only "Heizkurvensteilheit HK1" (heating curve slope, `MI=02`, `MX=00`, `OX=0x254B`, `OS=02`, scale 0.1) and "Heizkurve Parallelverschiebung HK1" (heating curve parallel shift, `OX=0x25AD`, signed, scale 0.1, unit K) sensors. Both were checked against the boiler controller settings on a WTC-GW 15-B. Negative parallel-shift values are decoded but not yet verified on hardware. Thanks @ChristophKomenda (#21).

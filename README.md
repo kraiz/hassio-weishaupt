@@ -145,7 +145,7 @@ This integration uses the Weishaupt CanApiJson protocol — a CAN bus-like proto
 
 Based on research from [BorgNumberOne/Weishaupt_CanApiJson](https://github.com/BorgNumberOne/Weishaupt_CanApiJson).
 
-Reads are batched at up to 6 VG frames per request with a minimum ~300ms gap enforced between requests, since larger/faster batches have been observed to cause intermittent `CMD_ERROR` responses on some hardware.
+Reads are batched at up to 4 VG frames per request with a minimum ~300ms gap enforced between requests, since larger/faster batches have been observed to cause intermittent `CMD_ERROR` responses on some hardware, and a narrowed device was seen answering only the first 4 frames of each request (#25).
 
 ## License
 

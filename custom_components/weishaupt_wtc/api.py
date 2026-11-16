@@ -16,10 +16,13 @@ _LOGGER = logging.getLogger(__name__)
 REQUEST_ID = "12345678"
 # Larger batches have been observed to cause individual frames to return
 # CMD_ERROR on some hardware, even though the same registers read fine in
-# smaller batches; 6 is what other CanApiJson implementations settled on.
-# 11+ frames per request stall the device (HTTP 200, empty body, other clients
-# blocked ~12 s); 8 and 10 did so sporadically (kraiz/hassio-weishaupt#15).
-MAX_PARAMS_PER_REQUEST = 6
+# smaller batches. 11+ frames per request stall the device (HTTP 200, empty
+# body, other clients blocked ~12 s); 8 and 10 did so sporadically. A device
+# can also narrow to answering only the first K frames of a request, with
+# K = 10 - occupied slots (kraiz/hassio-weishaupt#15). The device in
+# kraiz/hassio-weishaupt#25 stayed at K = 4 for hours; 4 keeps every frame
+# inside that window. It does not help if K drops below 4.
+MAX_PARAMS_PER_REQUEST = 4
 MIN_REQUEST_INTERVAL = 0.3  # seconds between requests, avoids overloading the device
 
 
