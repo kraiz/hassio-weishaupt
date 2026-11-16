@@ -131,8 +131,8 @@ class BatchCountingClient(api.WeishauptApiClient):
 class ApiClientBatchingTests(unittest.IsolatedAsyncioTestCase):
     """Test that reads are split into batches of MAX_PARAMS_PER_REQUEST."""
 
-    async def test_read_parameters_splits_into_batches_of_six(self) -> None:
-        """Larger batches have been observed to cause CMD_ERROR on real hardware."""
+    async def test_read_parameters_splits_into_batches_of_four(self) -> None:
+        """A narrowed device answered only frames 1 to 4 of every request (#25)."""
         client = BatchCountingClient(
             "wem-sg", "admin", "Admin123", min_request_interval=0
         )
@@ -143,7 +143,7 @@ class ApiClientBatchingTests(unittest.IsolatedAsyncioTestCase):
 
         await client.read_parameters(params)
 
-        self.assertEqual(client.batch_sizes, [6, 6, 2])
+        self.assertEqual(client.batch_sizes, [4, 4, 4, 2])
 
 
 class ThrottlingClient(api.WeishauptApiClient):
