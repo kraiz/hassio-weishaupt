@@ -370,5 +370,15 @@
                 "name": "DHW On/Off"
             }
         }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Scan interval",
+                "data": {
+                    "scan_interval": "Scan interval (seconds)"
+                }
+            }
+        }
     }
 }

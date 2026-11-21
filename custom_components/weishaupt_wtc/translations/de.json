@@ -370,5 +370,15 @@
                 "name": "Warmwasser Ein/Aus"
             }
         }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Abfrageintervall",
+                "data": {
+                    "scan_interval": "Abfrageintervall (Sekunden)"
+                }
+            }
+        }
     }
 }

@@ -370,5 +370,15 @@
                 "name": "ACS On/Off"
             }
         }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Intervallo di lettura",
+                "data": {
+                    "scan_interval": "Intervallo di lettura (secondi)"
+                }
+            }
+        }
     }
 }

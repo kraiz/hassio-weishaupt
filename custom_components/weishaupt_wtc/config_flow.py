@@ -7,7 +7,12 @@ from typing import Any
 
 import probatio as vol
 
-from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
+from homeassistant.config_entries import (
+    ConfigEntry,
+    ConfigFlow,
+    ConfigFlowResult,
+    OptionsFlow,
+)
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
@@ -27,14 +32,14 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+SCAN_INTERVAL_VALIDATOR = vol.All(vol.Coerce(int), vol.Range(min=10, max=300))
+
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_HOST): str,
         vol.Optional(CONF_USERNAME, default=DEFAULT_USERNAME): str,
         vol.Optional(CONF_PASSWORD, default=DEFAULT_PASSWORD): str,
-        vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): vol.All(
-            vol.Coerce(int), vol.Range(min=10, max=300)
-        ),
+        vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): SCAN_INTERVAL_VALIDATOR,
     }
 )
 
@@ -43,6 +48,11 @@ class WeishauptWemConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Weishaupt WTC."""
 
     VERSION = 1
+
+    @staticmethod
+    def async_get_options_flow(config_entry: ConfigEntry) -> WeishauptOptionsFlow:
+        """Return the options flow for changing the scan interval."""
+        return WeishauptOptionsFlow()
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -102,3 +112,25 @@ class WeishauptWemConfigFlow(ConfigFlow, domain=DOMAIN):
             data = {k: v for k, v in entry.data.items() if k != CONF_DETECTED_GROUPS}
             return self.async_update_reload_and_abort(entry, data=data)
         return self.async_show_form(step_id="reconfigure")
+
+
+class WeishauptOptionsFlow(OptionsFlow):
+    """Change the poll interval after setup."""
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Show or save the scan interval."""
+        if user_input is not None:
+            return self.async_create_entry(title="", data=user_input)
+
+        current = self.config_entry.options.get(
+            CONF_SCAN_INTERVAL,
+            self.config_entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
+        )
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema(
+                {vol.Required(CONF_SCAN_INTERVAL, default=current): SCAN_INTERVAL_VALIDATOR}
+            ),
+        )

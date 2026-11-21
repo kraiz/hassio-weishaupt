@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Feature: The poll interval can be changed after setup: *Configure* on the integration opens the scan interval (10–300 s). The entry reloads when it changes.
 - Feature: Add two diagnostic sensors on the Systemgerät device: "Parameters per request" (the current batch size, 1–6) and "Poll cycle duration" (ms). Both are disabled by default; enable them in the entity registry.
 - Change: The integration starts at 6 frames per CanApiJson request. If the device answers only the first K frames and returns error echoes for the rest, the batch size drops to K (minimum 1) and grows back by one after 10 clean polls. Optional-module detection does not adapt the batch size. Refs #15, #25.
 - Fix: A scheduled poll is skipped while the previous poll is still running, so slow polls no longer pile up.
