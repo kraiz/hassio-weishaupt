@@ -1,5 +1,6 @@
 """Regression tests for additional read-only WTC sensor definitions."""
 import unittest
+
 # Reuse the Home Assistant stubs and module loaders from existing tests.
 from test_api import api
 from test_sensor_device_info import sensors

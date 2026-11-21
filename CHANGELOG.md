@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Feature: Add 12 read-only WTC boiler and pump sensors: blower speed, burner target output, blower control signal, internal pump electrical power, min/max heating pump output, pump regulation mode, boiler flow temperature, burner anti-cycling lock, heating switching differential, maximum burner output in heating mode, and maximum VPT flow rate. Registers with unverified scaling are exposed as raw values. Thanks @ChristophKomenda (#24).
 - Feature: The poll interval can be changed after setup: *Configure* on the integration opens the scan interval (10–300 s). The entry reloads when it changes.
 - Feature: Add two diagnostic sensors on the Systemgerät device: "Parameters per request" (the current batch size, 1–6) and "Poll cycle duration" (ms). Both are disabled by default; enable them in the entity registry.
 - Change: The integration starts at 6 frames per CanApiJson request. If the device answers only the first K frames and returns error echoes for the rest, the batch size drops to K (minimum 1) and grows back by one after 10 clean polls. Optional-module detection does not adapt the batch size. Refs #15, #25.
