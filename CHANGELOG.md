@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.0 - 2026-11-21
 
 - Feature: Add 12 read-only WTC boiler and pump sensors: blower speed, burner target output, blower control signal, internal pump electrical power, min/max heating pump output, pump regulation mode, boiler flow temperature, burner anti-cycling lock, heating switching differential, maximum burner output in heating mode, and maximum VPT flow rate. Registers with unverified scaling are exposed as raw values. Thanks @ChristophKomenda (#24).
 - Feature: The poll interval can be changed after setup: *Configure* on the integration opens the scan interval (10–300 s). The entry reloads when it changes.
