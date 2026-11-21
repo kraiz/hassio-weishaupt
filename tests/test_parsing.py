@@ -16,8 +16,8 @@ MODULE_PATH = (
 )
 
 SPEC = importlib.util.spec_from_file_location("weishaupt_parsing", MODULE_PATH)
-parsing = importlib.util.module_from_spec(SPEC)
 assert SPEC is not None and SPEC.loader is not None
+parsing = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(parsing)
 
 
@@ -59,6 +59,28 @@ class ParsingTests(unittest.TestCase):
         )
 
         self.assertEqual(timestamp, datetime(2023, 2, 26, 20, 37, tzinfo=timezone.utc))
+
+
+class AccumulateDailyTotalTests(unittest.TestCase):
+    """The running total only changes when the source value changes."""
+
+    def test_first_reading_is_recorded_not_added(self) -> None:
+        self.assertEqual(parsing.accumulate_daily_total(0.0, None, 3200, 0.01), (0.0, 3200))
+
+    def test_unchanged_source_adds_nothing(self) -> None:
+        self.assertEqual(parsing.accumulate_daily_total(12.5, 3200, 3200, 0.01), (12.5, 3200))
+
+    def test_changed_source_adds_new_day_value(self) -> None:
+        total, last = parsing.accumulate_daily_total(0.0, 3200, 3850, 0.01)
+        self.assertAlmostEqual(total, 38.5)
+        self.assertEqual(last, 3850)
+
+    def test_totals_accumulate_over_days(self) -> None:
+        total, last = 0.0, None
+        for raw in (3200, 3200, 3850, 3000, 3000, 2950):
+            total, last = parsing.accumulate_daily_total(total, last, raw, 0.01)
+        self.assertAlmostEqual(total, 38.5 + 30.0 + 29.5)
+        self.assertEqual(last, 2950)
 
 
 if __name__ == "__main__":

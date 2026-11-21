@@ -74,3 +74,19 @@ def build_device_time(
         return None
 
     return dt
+
+
+def accumulate_daily_total(
+    total: float, last_source: int | None, raw: int, scale: float
+) -> tuple[float, int]:
+    """Add a daily-value source to a running total when the source changes.
+
+    The source is yesterday's total and changes once a day, so each change means a
+    new day's value. Only the source value is used; the first reading after setup
+    just records the value. Returns (new_total, new_last_source).
+    """
+    if last_source is None:
+        return total, raw
+    if raw == last_source:
+        return total, last_source
+    return total + raw * scale, raw

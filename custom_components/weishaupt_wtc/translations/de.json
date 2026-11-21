@@ -206,6 +206,15 @@
             "wtc_vpt_max_volumenstrom_rohwert": {
                 "name": "Maximaler VPT-Volumenstrom (Rohwert)"
             },
+            "wtc_waermemenge_gesamt_kumuliert": {
+                "name": "Wärmemenge gesamt (kumuliert)"
+            },
+            "wtc_waermemenge_heizen_kumuliert": {
+                "name": "Wärmemenge Heizbetrieb (kumuliert)"
+            },
+            "wtc_waermemenge_ww_kumuliert": {
+                "name": "Wärmemenge Warmwasser (kumuliert)"
+            },
             "sg_device_time": {
                 "name": "Uhrzeit / Datum"
             },

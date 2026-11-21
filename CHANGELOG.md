@@ -2,6 +2,8 @@
 
 ## 0.4.0 - 2026-11-21
 
+- Feature: Add three cumulative energy sensors for the Energy dashboard: "Wärmemenge gesamt / Heizbetrieb / Warmwasser (kumuliert)" (kWh, `TOTAL_INCREASING`). Each one is built from its daily source ("Tageswärmemenge Vortag"): when the source value changes, the new day's value is added to a running total. The total is restored after restarts. The total starts at 0 at setup, and days when Home Assistant was off are not counted.
+- Change: The three "Tageswärmemenge Vortag" sensors use `MEASUREMENT` instead of `TOTAL`, since they show yesterday's value and are not running sums. Existing long-term statistics recorded as sums may need to be cleared.
 - Feature: Add 12 read-only WTC boiler and pump sensors: blower speed, burner target output, blower control signal, internal pump electrical power, min/max heating pump output, pump regulation mode, boiler flow temperature, burner anti-cycling lock, heating switching differential, maximum burner output in heating mode, and maximum VPT flow rate. Registers with unverified scaling are exposed as raw values. Thanks @ChristophKomenda (#24).
 - Feature: The poll interval can be changed after setup: *Configure* on the integration opens the scan interval (10–300 s). The entry reloads when it changes.
 - Feature: Add two diagnostic sensors on the Systemgerät device: "Parameters per request" (the current batch size, 1–6) and "Poll cycle duration" (ms). Both are disabled by default; enable them in the entity registry.

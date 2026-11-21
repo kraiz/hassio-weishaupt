@@ -67,6 +67,7 @@ class WeishauptSensorDefinition:
     entity_registry_enabled_default: bool | None = None  # Override default enabled state; None = use category default
     request_vs: int | None = None  # For GET only; vs is response size
     none_values: tuple[int, ...] = ()  # Signed raw values reported as unavailable (e.g. "Off")
+    accumulate_from: str | None = None  # Daily-value source key; the entity keeps a running total
 
 
 # ============================================================================
@@ -1379,7 +1380,7 @@ WTC_SENSORS: list[WeishauptSensorDefinition] = [
         group=WeishauptDeviceGroup.WTC,
         modbus_reg="172_173",
         device_class=SensorDeviceClass.ENERGY,
-        state_class=SensorStateClass.TOTAL,
+        state_class=SensorStateClass.MEASUREMENT,
         unit=UnitOfEnergy.KILO_WATT_HOUR,
         scale=0.01,
     ),
@@ -1394,7 +1395,7 @@ WTC_SENSORS: list[WeishauptSensorDefinition] = [
         group=WeishauptDeviceGroup.WTC,
         modbus_reg="174_175",
         device_class=SensorDeviceClass.ENERGY,
-        state_class=SensorStateClass.TOTAL,
+        state_class=SensorStateClass.MEASUREMENT,
         unit=UnitOfEnergy.KILO_WATT_HOUR,
         scale=0.01,
     ),
@@ -1409,9 +1410,65 @@ WTC_SENSORS: list[WeishauptSensorDefinition] = [
         group=WeishauptDeviceGroup.WTC,
         modbus_reg="176_177",
         device_class=SensorDeviceClass.ENERGY,
-        state_class=SensorStateClass.TOTAL,
+        state_class=SensorStateClass.MEASUREMENT,
         unit=UnitOfEnergy.KILO_WATT_HOUR,
         scale=0.01,
+    ),
+    # Cumulative energy from the daily values above, for the Energy dashboard.
+    # Each change of the source adds the new day's value; see accumulate_daily_total.
+    WeishauptSensorDefinition(
+        key="wtc_waermemenge_gesamt_kumuliert",
+        name="Wärmemenge gesamt (kumuliert)",
+        mi=0,
+        mx=0,
+        ox=0,
+        os=0,
+        vs=4,
+        group=WeishauptDeviceGroup.WTC,
+        modbus_reg="",
+        device_class=SensorDeviceClass.ENERGY,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        unit=UnitOfEnergy.KILO_WATT_HOUR,
+        scale=0.01,
+        icon="mdi:fire",
+        poll=False,
+        accumulate_from="wtc_tageswaermemenge_vortag_gesamt",
+    ),
+    WeishauptSensorDefinition(
+        key="wtc_waermemenge_heizen_kumuliert",
+        name="Wärmemenge Heizbetrieb (kumuliert)",
+        mi=0,
+        mx=0,
+        ox=0,
+        os=0,
+        vs=4,
+        group=WeishauptDeviceGroup.WTC,
+        modbus_reg="",
+        device_class=SensorDeviceClass.ENERGY,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        unit=UnitOfEnergy.KILO_WATT_HOUR,
+        scale=0.01,
+        icon="mdi:radiator",
+        poll=False,
+        accumulate_from="wtc_tageswaermemenge_vortag_heizen",
+    ),
+    WeishauptSensorDefinition(
+        key="wtc_waermemenge_ww_kumuliert",
+        name="Wärmemenge Warmwasser (kumuliert)",
+        mi=0,
+        mx=0,
+        ox=0,
+        os=0,
+        vs=4,
+        group=WeishauptDeviceGroup.WTC,
+        modbus_reg="",
+        device_class=SensorDeviceClass.ENERGY,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        unit=UnitOfEnergy.KILO_WATT_HOUR,
+        scale=0.01,
+        icon="mdi:water-boiler",
+        poll=False,
+        accumulate_from="wtc_tageswaermemenge_vortag_ww",
     ),
     # Additional WTC boiler/pump research – read-only CanApiJson GET registers.
     # See docs/wtc-additional-readonly-sensors.md for validation limitations.

@@ -60,6 +60,7 @@ class SensorStateClass:
 setattr(sensor_component, "SensorEntity", SensorEntity)
 setattr(sensor_component, "SensorDeviceClass", SensorDeviceClass())
 setattr(sensor_component, "SensorStateClass", SensorStateClass())
+sensor_component.__dict__.update(RestoreSensor=type("RestoreSensor", (SensorEntity,), {}))
 sys.modules["homeassistant.components.sensor"] = sensor_component
 
 switch_component = types.ModuleType("homeassistant.components.switch")

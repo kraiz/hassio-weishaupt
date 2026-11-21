@@ -206,6 +206,15 @@
             "wtc_vpt_max_volumenstrom_rohwert": {
                 "name": "Portata massima VPT (valore grezzo)"
             },
+            "wtc_waermemenge_gesamt_kumuliert": {
+                "name": "Quantità di calore totale (cumulativa)"
+            },
+            "wtc_waermemenge_heizen_kumuliert": {
+                "name": "Quantità di calore riscaldamento (cumulativa)"
+            },
+            "wtc_waermemenge_ww_kumuliert": {
+                "name": "Quantità di calore ACS (cumulativa)"
+            },
             "sg_device_time": {
                 "name": "Ora / Data"
             },

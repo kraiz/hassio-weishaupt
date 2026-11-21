@@ -7,7 +7,7 @@ from functools import cached_property
 from typing import Any
 from zoneinfo import ZoneInfo
 
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import RestoreSensor, SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
@@ -19,6 +19,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN
 from .coordinator import WeishauptDataUpdateCoordinator
 from .parsing import (
+    accumulate_daily_total,
     build_device_time,
     decode_fault_status,
     decode_fault_status_attributes,
@@ -105,8 +106,13 @@ async def async_setup_entry(
         if not _is_group_active(coordinator, sensor_def.group):
             continue
 
+        entity_class = (
+            WeishauptCumulativeEnergySensor
+            if sensor_def.accumulate_from is not None
+            else WeishauptSensorEntity
+        )
         entities.append(
-            WeishauptSensorEntity(
+            entity_class(
                 coordinator=coordinator,
                 sensor_def=sensor_def,
                 entry=entry,
@@ -325,3 +331,83 @@ class WeishauptSensorEntity(
                         attrs.update(decode_module_attributes(module[1]))
 
         return attrs
+
+
+class WeishauptCumulativeEnergySensor(WeishauptSensorEntity, RestoreSensor):
+    """Running energy total from a daily-value source sensor.
+
+    Only the source sensor is used. Its value changes once a day, and each change adds
+    the new value to the total. The total and the last source value are restored after
+    a restart, so a restart does not count the same day twice. Days when Home Assistant
+    was off are lost, because the device only reports yesterday.
+    """
+
+    def __init__(
+        self,
+        coordinator: WeishauptDataUpdateCoordinator,
+        sensor_def: WeishauptSensorDefinition,
+        entry: ConfigEntry,
+    ) -> None:
+        """Initialize the cumulative sensor."""
+        super().__init__(coordinator=coordinator, sensor_def=sensor_def, entry=entry)
+        self._total = 0.0
+        self._last_source: int | None = None
+
+    def _read_source(self) -> int | None:
+        """Return the raw source value, or None if it is missing or a sentinel."""
+        data = self.coordinator.data
+        if not data:
+            return None
+        item = data.get(self._sensor_def.accumulate_from or "")
+        if not item:
+            return None
+        raw = item.get("value_int")
+        if raw is None or raw in (0x80000000, 0xFFFFFFFF):
+            return None
+        return raw
+
+    def _accumulate(self) -> None:
+        """Add the source value to the total when it has changed."""
+        raw = self._read_source()
+        if raw is None:
+            return
+        self._total, self._last_source = accumulate_daily_total(
+            self._total, self._last_source, raw, self._sensor_def.scale
+        )
+
+    async def async_added_to_hass(self) -> None:
+        """Restore the total and the last source value, then catch up."""
+        await super().async_added_to_hass()
+        last = await self.async_get_last_state()
+        if last is not None:
+            try:
+                self._total = float(last.state)
+            except (TypeError, ValueError):
+                self._total = 0.0
+            source = last.attributes.get("source_value")
+            if isinstance(source, int):
+                self._last_source = source
+        self._accumulate()
+
+    @property
+    def available(self) -> bool:  # type: ignore[override]
+        """Return True while the source value is readable."""
+        return self.coordinator.last_update_success and self._read_source() is not None
+
+    @property
+    def native_value(self) -> float:  # type: ignore[override]
+        """Return the running total in kWh."""
+        return round(self._total, 2)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:  # type: ignore[override]
+        """Return the source value used for the next comparison."""
+        attrs: dict[str, Any] = {"source_sensor": self._sensor_def.accumulate_from}
+        attrs["source_value"] = self._last_source
+        return attrs
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Accumulate the new source value and write the state."""
+        self._accumulate()
+        self.async_write_ha_state()

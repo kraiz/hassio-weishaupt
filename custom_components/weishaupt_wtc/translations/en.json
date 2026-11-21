@@ -206,6 +206,15 @@
             "wtc_vpt_max_volumenstrom_rohwert": {
                 "name": "Maximum VPT flow rate (raw value)"
             },
+            "wtc_waermemenge_gesamt_kumuliert": {
+                "name": "Heat quantity total (cumulative)"
+            },
+            "wtc_waermemenge_heizen_kumuliert": {
+                "name": "Heat quantity heating (cumulative)"
+            },
+            "wtc_waermemenge_ww_kumuliert": {
+                "name": "Heat quantity DHW (cumulative)"
+            },
             "sg_device_time": {
                 "name": "Time / Date"
             },
