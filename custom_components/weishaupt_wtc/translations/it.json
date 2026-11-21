@@ -170,6 +170,42 @@
             "int_poll_duration": {
                 "name": "Durata ciclo di lettura"
             },
+            "wtc_geblaesedrehzahl": {
+                "name": "Velocità ventilatore"
+            },
+            "wtc_pumpe_intern_elektrische_leistung": {
+                "name": "Potenza elettrica pompa interna"
+            },
+            "wtc_kessel_vorlauf_rohwert": {
+                "name": "Mandata caldaia (valore grezzo)"
+            },
+            "wtc_brenner_sollleistung": {
+                "name": "Potenza bruciatore nominale"
+            },
+            "wtc_geblaese_ansteuerung": {
+                "name": "Segnale di controllo ventilatore"
+            },
+            "wtc_brennertaktsperre_rohwert": {
+                "name": "Blocco ciclico bruciatore (valore grezzo)"
+            },
+            "wtc_schaltdifferenz_heizbetrieb_rohwert": {
+                "name": "Differenziale di commutazione riscaldamento (valore grezzo)"
+            },
+            "wtc_brennerleistung_max_heizbetrieb_rohwert": {
+                "name": "Potenza massima bruciatore in riscaldamento (valore grezzo)"
+            },
+            "wtc_pumpenleistung_min_heizbetrieb": {
+                "name": "Potenza minima pompa riscaldamento"
+            },
+            "wtc_pumpenleistung_max_heizbetrieb": {
+                "name": "Potenza massima pompa riscaldamento"
+            },
+            "wtc_pumpenregelungsart_rohwert": {
+                "name": "Modalità regolazione pompa (valore grezzo)"
+            },
+            "wtc_vpt_max_volumenstrom_rohwert": {
+                "name": "Portata massima VPT (valore grezzo)"
+            },
             "sg_device_time": {
                 "name": "Ora / Data"
             },

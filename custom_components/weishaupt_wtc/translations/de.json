@@ -170,6 +170,42 @@
             "int_poll_duration": {
                 "name": "Abfragezyklus-Dauer"
             },
+            "wtc_geblaesedrehzahl": {
+                "name": "Gebläsedrehzahl"
+            },
+            "wtc_pumpe_intern_elektrische_leistung": {
+                "name": "Interne Pumpe elektrische Leistung"
+            },
+            "wtc_kessel_vorlauf_rohwert": {
+                "name": "Kessel-Vorlauf (Rohwert)"
+            },
+            "wtc_brenner_sollleistung": {
+                "name": "Brenner-Sollleistung"
+            },
+            "wtc_geblaese_ansteuerung": {
+                "name": "Gebläse-Ansteuersignal"
+            },
+            "wtc_brennertaktsperre_rohwert": {
+                "name": "Brennertaktsperre (Rohwert)"
+            },
+            "wtc_schaltdifferenz_heizbetrieb_rohwert": {
+                "name": "Schaltdifferenz Heizbetrieb (Rohwert)"
+            },
+            "wtc_brennerleistung_max_heizbetrieb_rohwert": {
+                "name": "Maximale Brennerleistung Heizbetrieb (Rohwert)"
+            },
+            "wtc_pumpenleistung_min_heizbetrieb": {
+                "name": "Minimale Pumpenleistung Heizbetrieb"
+            },
+            "wtc_pumpenleistung_max_heizbetrieb": {
+                "name": "Maximale Pumpenleistung Heizbetrieb"
+            },
+            "wtc_pumpenregelungsart_rohwert": {
+                "name": "Pumpenregelungsart (Rohwert)"
+            },
+            "wtc_vpt_max_volumenstrom_rohwert": {
+                "name": "Maximaler VPT-Volumenstrom (Rohwert)"
+            },
             "sg_device_time": {
                 "name": "Uhrzeit / Datum"
             },

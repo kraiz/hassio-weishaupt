@@ -170,6 +170,42 @@
             "int_poll_duration": {
                 "name": "Poll cycle duration"
             },
+            "wtc_geblaesedrehzahl": {
+                "name": "Blower speed"
+            },
+            "wtc_pumpe_intern_elektrische_leistung": {
+                "name": "Internal pump electrical power"
+            },
+            "wtc_kessel_vorlauf_rohwert": {
+                "name": "Boiler flow (raw value)"
+            },
+            "wtc_brenner_sollleistung": {
+                "name": "Burner target output"
+            },
+            "wtc_geblaese_ansteuerung": {
+                "name": "Blower control signal"
+            },
+            "wtc_brennertaktsperre_rohwert": {
+                "name": "Burner anti-cycling lock (raw value)"
+            },
+            "wtc_schaltdifferenz_heizbetrieb_rohwert": {
+                "name": "Heating switching differential (raw value)"
+            },
+            "wtc_brennerleistung_max_heizbetrieb_rohwert": {
+                "name": "Maximum burner output in heating mode (raw value)"
+            },
+            "wtc_pumpenleistung_min_heizbetrieb": {
+                "name": "Minimum heating pump output"
+            },
+            "wtc_pumpenleistung_max_heizbetrieb": {
+                "name": "Maximum heating pump output"
+            },
+            "wtc_pumpenregelungsart_rohwert": {
+                "name": "Pump regulation mode (raw value)"
+            },
+            "wtc_vpt_max_volumenstrom_rohwert": {
+                "name": "Maximum VPT flow rate (raw value)"
+            },
             "sg_device_time": {
                 "name": "Time / Date"
             },
