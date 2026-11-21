@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Change: The integration starts at 6 frames per CanApiJson request. If the device answers only the first K frames and returns error echoes for the rest, the batch size drops to K (minimum 1) and grows back by one after 10 clean polls. Optional-module detection does not adapt the batch size. Refs #15, #25.
+- Fix: A scheduled poll is skipped while the previous poll is still running, so slow polls no longer pile up.
+- Fix: The config flow uses `probatio` as its schema library, the one Home Assistant 2026.11 uses.
+
 ## 0.3.4 - 2026-11-15
 
 - Feature: Add read-only "Heizkurvensteilheit HK1" (heating curve slope, `MI=02`, `MX=00`, `OX=0x254B`, `OS=02`, scale 0.1) and "Heizkurve Parallelverschiebung HK1" (heating curve parallel shift, `OX=0x25AD`, signed, scale 0.1, unit K) sensors. Both were checked against the boiler controller settings on a WTC-GW 15-B. Negative parallel-shift values are decoded but not yet verified on hardware. Thanks @ChristophKomenda (#21).
