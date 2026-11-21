@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 import importlib.util
-from pathlib import Path
 import sys
 import time
 import types
 import unittest
-
+from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_ROOT = REPO_ROOT / "custom_components" / "weishaupt_wtc"
@@ -45,18 +44,20 @@ class ClientSession:
         """Provide the interface used by the client close method."""
 
 
-aiohttp_stub.ClientConnectorError = ClientConnectorError
-aiohttp_stub.BasicAuth = BasicAuth
-aiohttp_stub.ClientTimeout = ClientTimeout
-aiohttp_stub.ClientSession = ClientSession
+aiohttp_stub.__dict__.update(
+    ClientConnectorError=ClientConnectorError,
+    BasicAuth=BasicAuth,
+    ClientTimeout=ClientTimeout,
+    ClientSession=ClientSession,
+)
 sys.modules.setdefault("aiohttp", aiohttp_stub)
 
 
 def load_module(module_name: str, file_path: Path):
     """Load a module from file while preserving package-relative imports."""
     spec = importlib.util.spec_from_file_location(module_name, file_path)
-    module = importlib.util.module_from_spec(spec)
     assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
     return module
@@ -262,6 +263,92 @@ class HK1RequestSizeTests(unittest.IsolatedAsyncioTestCase):
         client.frame = "020200251c0200020096"
         results, answered = await client.read_parameters_with_status([spec])
         self.assertEqual(answered, {"ordinary"})
+
+
+class AdaptiveBatchClient(api.WeishauptApiClient):
+    """Test double: answers the first `width` frames of each request, errors the rest."""
+
+    def __init__(self, width: int, **kwargs) -> None:
+        super().__init__("wem-sg", "admin", "Admin123", min_request_interval=0, **kwargs)
+        self.width = width
+        self.batch_sizes: list[int] = []
+
+    async def _post_once(self, payload: dict) -> dict:
+        capi = payload["CAPI"]
+        self.batch_sizes.append(capi["NN"])
+        out = {}
+        for i in range(capi["NN"]):
+            key = f"N{i + 1:02d}"
+            vg = capi[key]["VG"]
+            if i < self.width:
+                # Response: CMD 02, same MI/MX/OX/OS/VS, value 0x0001.
+                out[key] = {"VG": "02" + vg[2:16] + "0001"}
+            else:
+                out[key] = {"VG": "050201257e0500020001"}
+        return {"CAPI": out}
+
+
+def _params(count: int) -> list[dict]:
+    return [
+        {"key": f"p{i}", "mi": 2, "mx": 0, "ox": 0x2500 + i, "os": 2, "vs": 1}
+        for i in range(count)
+    ]
+
+
+class AdaptiveBatchSizeTests(unittest.IsolatedAsyncioTestCase):
+    """Batch size starts at 6, shrinks on a narrowed reply, grows back slowly."""
+
+    async def test_narrowed_device_shrinks_batch_size_to_answered_width(self) -> None:
+        client = AdaptiveBatchClient(width=4)
+        results, answered = await client.read_parameters_with_status(_params(6))
+        self.assertEqual(client.batch_sizes, [6])
+        self.assertEqual(client._batch_size, 4)
+        self.assertEqual(set(results), {"p0", "p1", "p2", "p3"})
+        self.assertEqual(answered, {"p0", "p1", "p2", "p3", "p4", "p5"})
+
+        await client.read_parameters_with_status(_params(6))
+        self.assertEqual(client.batch_sizes, [6, 4, 2])
+
+    async def test_healthy_device_keeps_batch_size_six(self) -> None:
+        client = AdaptiveBatchClient(width=6)
+        await client.read_parameters_with_status(_params(14))
+        self.assertEqual(client.batch_sizes, [6, 6, 2])
+        self.assertEqual(client._batch_size, 6)
+
+    async def test_error_in_middle_of_batch_is_not_narrowing(self) -> None:
+        statuses = ["value", "error", "value", "value", "value", "value"]
+        self.assertIsNone(api._narrowed_width(statuses))
+
+    async def test_no_values_or_missing_replies_are_not_narrowing(self) -> None:
+        self.assertIsNone(api._narrowed_width(["error"] * 6))
+        self.assertIsNone(api._narrowed_width(["value", "value", "none", "error"]))
+        self.assertIsNone(api._narrowed_width(["value"] * 6))
+
+    async def test_detection_reads_do_not_adapt(self) -> None:
+        client = AdaptiveBatchClient(width=2)
+        await client.read_parameters_with_status(_params(6), adapt_batch_size=False)
+        self.assertEqual(client._batch_size, 6)
+
+    async def test_batch_size_grows_back_after_clean_polls(self) -> None:
+        client = AdaptiveBatchClient(width=6)
+        client._batch_size = 4
+        for _ in range(api.GROW_AFTER_CLEAN_POLLS - 1):
+            await client.read_parameters_with_status(_params(4))
+        self.assertEqual(client._batch_size, 4)
+        await client.read_parameters_with_status(_params(4))
+        self.assertEqual(client._batch_size, 5)
+
+    async def test_batch_size_never_exceeds_six_or_drops_below_one(self) -> None:
+        client = AdaptiveBatchClient(width=1)
+        await client.read_parameters_with_status(_params(3))
+        self.assertEqual(client._batch_size, 1)
+        client._clean_polls = api.GROW_AFTER_CLEAN_POLLS - 1
+        client._update_batch_size_after_poll(narrowed=False)
+        self.assertEqual(client._batch_size, 2)
+        client._batch_size = api.MAX_PARAMS_PER_REQUEST
+        client._clean_polls = api.GROW_AFTER_CLEAN_POLLS - 1
+        client._update_batch_size_after_poll(narrowed=False)
+        self.assertEqual(client._batch_size, api.MAX_PARAMS_PER_REQUEST)
 
 
 if __name__ == "__main__":

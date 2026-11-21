@@ -46,9 +46,23 @@ class WeishauptDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         # shortcut: a module removed after detection stays polled until Reconfigure re-detects, upgrade to dropping groups after repeated CMD_ERROR
         self.active_groups = active_groups
         self._on_groups_detected = on_groups_detected
+        # True while a poll is in flight. A poll that starts while this is set is
+        # skipped, so slow polls (smaller batches) never pile up.
+        self._poll_running = False
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from the Weishaupt device."""
+        if self._poll_running:
+            _LOGGER.debug("Previous poll still running, skipping this cycle")
+            return self.data if self.data is not None else {}
+        self._poll_running = True
+        try:
+            return await self._poll()
+        finally:
+            self._poll_running = False
+
+    async def _poll(self) -> dict[str, Any]:
+        """Run one poll cycle against the device."""
         detecting = self.active_groups is None
         optional_probes: dict[WeishauptDeviceGroup, WeishauptSensorDefinition] = {}
         sensor_definitions = POLLED_SENSORS
@@ -83,7 +97,9 @@ class WeishauptDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             )
 
         try:
-            results, answered = await self.client.read_parameters_with_status(params)
+            results, answered = await self.client.read_parameters_with_status(
+                params, adapt_batch_size=not detecting
+            )
         except WeishauptConnectionError as err:
             raise UpdateFailed(f"Connection error: {err}") from err
         except WeishauptApiError as err:

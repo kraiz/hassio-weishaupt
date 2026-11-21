@@ -17,8 +17,8 @@ PACKAGE_ROOT = REPO_ROOT / "custom_components" / "weishaupt_wtc"
 def load_module(module_name: str, file_path: Path):
     """Load a module from file while preserving package-relative imports."""
     spec = importlib.util.spec_from_file_location(module_name, file_path)
-    module = importlib.util.module_from_spec(spec)
     assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
     return module
@@ -49,21 +49,24 @@ class SensorStateClass:
         return name
 
 
-sensor_component.SensorDeviceClass = SensorDeviceClass()
-sensor_component.SensorStateClass = SensorStateClass()
+sensor_component.__dict__.update(
+    SensorDeviceClass=SensorDeviceClass(), SensorStateClass=SensorStateClass()
+)
 sys.modules.setdefault("homeassistant.components.sensor", sensor_component)
 
 core = types.ModuleType("homeassistant.core")
-core.HomeAssistant = object
+core.__dict__.update(HomeAssistant=object)
 sys.modules.setdefault("homeassistant.core", core)
 
 const = types.ModuleType("homeassistant.const")
-const.PERCENTAGE = "%"
-const.UnitOfEnergy = SimpleNamespace(KILO_WATT_HOUR="kWh")
-const.UnitOfPower = SimpleNamespace(KILO_WATT="kW")
-const.UnitOfPressure = SimpleNamespace(BAR="bar")
-const.UnitOfTemperature = SimpleNamespace(CELSIUS="°C")
-const.UnitOfTime = SimpleNamespace(HOURS="h")
+const.__dict__.update(
+    PERCENTAGE="%",
+    UnitOfEnergy=SimpleNamespace(KILO_WATT_HOUR="kWh"),
+    UnitOfPower=SimpleNamespace(KILO_WATT="kW"),
+    UnitOfPressure=SimpleNamespace(BAR="bar"),
+    UnitOfTemperature=SimpleNamespace(CELSIUS="°C"),
+    UnitOfTime=SimpleNamespace(HOURS="h"),
+)
 sys.modules.setdefault("homeassistant.const", const)
 
 helpers_pkg = types.ModuleType("homeassistant.helpers")
@@ -91,8 +94,9 @@ class UpdateFailed(Exception):
     """Minimal update failure stub."""
 
 
-update_coordinator.DataUpdateCoordinator = DataUpdateCoordinator
-update_coordinator.UpdateFailed = UpdateFailed
+update_coordinator.__dict__.update(
+    DataUpdateCoordinator=DataUpdateCoordinator, UpdateFailed=UpdateFailed
+)
 sys.modules.setdefault("homeassistant.helpers.update_coordinator", update_coordinator)
 
 custom_components_pkg = types.ModuleType("custom_components")
@@ -123,9 +127,11 @@ class WeishauptConnectionError(WeishauptApiError):
     """Stub connection error."""
 
 
-api_stub.WeishauptApiClient = WeishauptApiClient
-api_stub.WeishauptApiError = WeishauptApiError
-api_stub.WeishauptConnectionError = WeishauptConnectionError
+api_stub.__dict__.update(
+    WeishauptApiClient=WeishauptApiClient,
+    WeishauptApiError=WeishauptApiError,
+    WeishauptConnectionError=WeishauptConnectionError,
+)
 sys.modules["custom_components.weishaupt_wtc.api"] = api_stub
 
 coordinator_module = load_module(
@@ -140,7 +146,9 @@ class FakeClient:
         self._responses = responses
         self.calls: list[list[dict]] = []
 
-    async def read_parameters_with_status(self, params: list[dict]) -> tuple[dict, set]:
+    async def read_parameters_with_status(
+        self, params: list[dict], adapt_batch_size: bool = True
+    ) -> tuple[dict, set]:
         self.calls.append(params)
         return self._responses[len(self.calls) - 1]
 
@@ -267,6 +275,36 @@ class CoordinatorOptionalGroupDetectionTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn(hk_key, keys)
         self.assertFalse(keys & {sol_key, hk3_key})
         self.assertEqual(stored, [])
+
+
+class CoordinatorPollOverlapTests(unittest.IsolatedAsyncioTestCase):
+    """A scheduled poll must not start while the previous one is still running."""
+
+    async def test_poll_is_skipped_while_previous_poll_runs(self) -> None:
+        client = FakeClient(responses=[({}, set())])
+        coordinator = coordinator_module.WeishauptDataUpdateCoordinator(
+            hass=SimpleNamespace(), client=client, scan_interval=30,
+            active_groups=set(),
+        )
+        coordinator.data = {"previous": 1}
+        coordinator._poll_running = True
+
+        result = await coordinator._async_update_data()
+
+        self.assertEqual(result, {"previous": 1})
+        self.assertEqual(client.calls, [])
+
+    async def test_running_flag_is_cleared_after_poll(self) -> None:
+        client = FakeClient(responses=[({}, set())])
+        coordinator = coordinator_module.WeishauptDataUpdateCoordinator(
+            hass=SimpleNamespace(), client=client, scan_interval=30,
+            active_groups=set(),
+        )
+
+        await coordinator._async_update_data()
+
+        self.assertFalse(coordinator._poll_running)
+        self.assertEqual(len(client.calls), 1)
 
 
 if __name__ == "__main__":

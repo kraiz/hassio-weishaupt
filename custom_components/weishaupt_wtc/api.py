@@ -20,6 +20,9 @@ REQUEST_ID = "12345678"
 # 11+ frames per request stall the device (HTTP 200, empty body, other clients
 # blocked ~12 s); 8 and 10 did so sporadically (kraiz/hassio-weishaupt#15).
 MAX_PARAMS_PER_REQUEST = 6
+MIN_PARAMS_PER_REQUEST = 1
+# Consecutive polls without a narrowed reply before the batch size grows by one.
+GROW_AFTER_CLEAN_POLLS = 10
 MIN_REQUEST_INTERVAL = 0.3  # seconds between requests, avoids overloading the device
 
 
@@ -33,6 +36,26 @@ class WeishauptConnectionError(WeishauptApiError):
 
 class WeishauptAuthError(WeishauptApiError):
     """Exception for authentication errors."""
+
+
+def _narrowed_width(statuses: list[str]) -> int | None:
+    """Return how many leading frames the device answered, if it narrowed.
+
+    A narrowed device answers frames 1..K with values and returns CMD_ERROR for
+    the rest (kraiz/hassio-weishaupt#15, #25). Signal: at least one value, followed
+    only by error echoes until the end of the batch. Frames without any reply
+    ("none") break the pattern and are not treated as narrowing. An error in the
+    middle of a batch is ignored, since it can come from a harmless object.
+    """
+    last_value = max(
+        (i for i, status in enumerate(statuses) if status == "value"), default=None
+    )
+    if last_value is None:
+        return None
+    tail = statuses[last_value + 1 :]
+    if not tail or any(status != "error" for status in tail):
+        return None
+    return last_value + 1
 
 
 def build_vg_frame(cmd: int, mi: int, mx: int, ox: int, os_val: int, vs: int) -> str:
@@ -108,6 +131,8 @@ class WeishauptApiClient:
         self._request_lock = asyncio.Lock()
         self._last_request_at: float | None = None
         self._min_request_interval = min_request_interval
+        self._batch_size = MAX_PARAMS_PER_REQUEST
+        self._clean_polls = 0
 
     async def _ensure_session(self) -> aiohttp.ClientSession:
         """Ensure we have an active session."""
@@ -203,26 +228,33 @@ class WeishauptApiClient:
         return results
 
     async def read_parameters_with_status(
-        self, params: list[dict[str, int]]
+        self,
+        params: list[dict[str, Any]],
+        adapt_batch_size: bool = True,
     ) -> tuple[dict[str, Any], set[str]]:
         """Read multiple parameters from the device.
 
         Args:
             params: List of dicts with keys: mi, mx, ox, os, vs, key
                     where 'key' is a unique identifier for the parameter.
+            adapt_batch_size: Shrink the batch size when the device narrows
+                    (see _narrowed_width). Disable for detection probes, whose
+                    CMD_ERROR replies are expected and must not be re-sent.
 
         Returns:
             (results, answered): results maps key -> parsed response value dict;
             answered holds every key the device replied to, with a value or with
             CMD_ERROR. A key missing from answered got no reply at all.
         """
-        results = {}
+        results: dict[str, Any] = {}
         answered: set[str] = set()
+        narrowed = False
 
-        # Split into batches of MAX_PARAMS_PER_REQUEST
-        for batch_start in range(0, len(params), MAX_PARAMS_PER_REQUEST):
-            batch = params[batch_start : batch_start + MAX_PARAMS_PER_REQUEST]
-            capi = {"NN": len(batch)}
+        pos = 0
+        while pos < len(params):
+            batch = params[pos : pos + self._batch_size]
+            pos += len(batch)
+            capi: dict[str, Any] = {"NN": len(batch)}
 
             for i, param in enumerate(batch):
                 vg = build_read_vg(
@@ -255,14 +287,18 @@ class WeishauptApiClient:
                 continue
 
             response_capi = response["CAPI"]
+            statuses: list[str] = []
             for i, param in enumerate(batch):
                 key = f"N{i + 1:02d}"
+                status = "none"
                 if key not in response_capi:
                     _LOGGER.debug("Missing %s in response", key)
+                    statuses.append(status)
                     continue
 
                 vg_str = response_capi[key].get("VG", "")
                 if not vg_str:
+                    statuses.append(status)
                     continue
 
                 try:
@@ -273,16 +309,19 @@ class WeishauptApiClient:
                         param.get("key", key),
                         err,
                     )
+                    statuses.append(status)
                     continue
 
                 # Check for error response
                 if parsed["cmd"] == CMD_ERROR:
                     answered.add(param["key"])
+                    status = "error"
                     _LOGGER.debug(
                         "Error response for %s: %s",
                         param.get("key", key),
                         vg_str,
                     )
+                    statuses.append(status)
                     continue
 
                 # Check it's a proper response
@@ -292,11 +331,44 @@ class WeishauptApiClient:
                         for field in ("mi", "mx", "ox", "os", "vs")
                     ):
                         _LOGGER.debug("Discarding mismatched HK1 reply for %s", param["key"])
+                        statuses.append(status)
                         continue
                     answered.add(param["key"])
                     results[param["key"]] = parsed
+                    status = "value"
+                statuses.append(status)
+
+            if adapt_batch_size:
+                width = _narrowed_width(statuses)
+                if width is not None:
+                    narrowed = True
+                    if width < self._batch_size:
+                        _LOGGER.info(
+                            "Device answers %d of %d frames; reducing batch size to %d",
+                            width,
+                            len(batch),
+                            width,
+                        )
+                        self._batch_size = max(MIN_PARAMS_PER_REQUEST, width)
+
+        if adapt_batch_size:
+            self._update_batch_size_after_poll(narrowed)
 
         return results, answered
+
+    def _update_batch_size_after_poll(self, narrowed: bool) -> None:
+        """Grow the batch size back by one after enough clean polls."""
+        if narrowed:
+            self._clean_polls = 0
+            return
+        self._clean_polls += 1
+        if (
+            self._clean_polls >= GROW_AFTER_CLEAN_POLLS
+            and self._batch_size < MAX_PARAMS_PER_REQUEST
+        ):
+            self._clean_polls = 0
+            self._batch_size += 1
+            _LOGGER.info("Clean polls; increasing batch size to %d", self._batch_size)
 
     async def write_parameter(
         self,
