@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import time
 from collections.abc import Callable
 from datetime import timedelta
 from typing import Any
@@ -20,6 +21,10 @@ from .sensors import (
 )
 
 _LOGGER = logging.getLogger(__name__)
+
+# Data keys for the coordinator's own diagnostics (not device objects).
+KEY_BATCH_SIZE = "int_batch_size"
+KEY_POLL_DURATION = "int_poll_duration"
 
 
 class WeishauptDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -56,10 +61,17 @@ class WeishauptDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             _LOGGER.debug("Previous poll still running, skipping this cycle")
             return self.data if self.data is not None else {}
         self._poll_running = True
+        started = time.monotonic()
         try:
-            return await self._poll()
+            results = await self._poll()
         finally:
             self._poll_running = False
+        # Diagnostic values, computed here rather than read from the device.
+        results[KEY_BATCH_SIZE] = {"value_int": self.client.batch_size}
+        results[KEY_POLL_DURATION] = {
+            "value_int": round((time.monotonic() - started) * 1000)
+        }
+        return results
 
     async def _poll(self) -> dict[str, Any]:
         """Run one poll cycle against the device."""

@@ -94,7 +94,7 @@ setattr(const, "UnitOfEnergy", SimpleNamespace(KILO_WATT_HOUR="kWh"))
 setattr(const, "UnitOfPower", SimpleNamespace(KILO_WATT="kW"))
 setattr(const, "UnitOfPressure", SimpleNamespace(BAR="bar"))
 setattr(const, "UnitOfTemperature", SimpleNamespace(CELSIUS="°C"))
-setattr(const, "UnitOfTime", SimpleNamespace(HOURS="h"))
+const.__dict__.update(UnitOfTime=SimpleNamespace(HOURS="h", MILLISECONDS="ms"))
 sys.modules["homeassistant.const"] = const
 
 helpers_pkg = types.ModuleType("homeassistant.helpers")

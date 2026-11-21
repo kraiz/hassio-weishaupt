@@ -164,6 +164,12 @@
             "sg_datum_jahr": {
                 "name": "Data - Anno"
             },
+            "int_batch_size": {
+                "name": "Parametri per richiesta"
+            },
+            "int_poll_duration": {
+                "name": "Durata ciclo di lettura"
+            },
             "sg_device_time": {
                 "name": "Ora / Data"
             },

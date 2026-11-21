@@ -134,6 +134,11 @@ class WeishauptApiClient:
         self._batch_size = MAX_PARAMS_PER_REQUEST
         self._clean_polls = 0
 
+    @property
+    def batch_size(self) -> int:
+        """Current number of frames per request (see read_parameters_with_status)."""
+        return self._batch_size
+
     async def _ensure_session(self) -> aiohttp.ClientSession:
         """Ensure we have an active session."""
         if self._session is None or self._session.closed:

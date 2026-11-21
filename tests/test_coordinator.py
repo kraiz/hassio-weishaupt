@@ -65,7 +65,7 @@ const.__dict__.update(
     UnitOfPower=SimpleNamespace(KILO_WATT="kW"),
     UnitOfPressure=SimpleNamespace(BAR="bar"),
     UnitOfTemperature=SimpleNamespace(CELSIUS="°C"),
-    UnitOfTime=SimpleNamespace(HOURS="h"),
+    UnitOfTime=SimpleNamespace(HOURS="h", MILLISECONDS="ms"),
 )
 sys.modules.setdefault("homeassistant.const", const)
 
@@ -145,6 +145,7 @@ class FakeClient:
     def __init__(self, responses: list[tuple[dict, set]]) -> None:
         self._responses = responses
         self.calls: list[list[dict]] = []
+        self.batch_size = 6
 
     async def read_parameters_with_status(
         self, params: list[dict], adapt_batch_size: bool = True
@@ -305,6 +306,20 @@ class CoordinatorPollOverlapTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertFalse(coordinator._poll_running)
         self.assertEqual(len(client.calls), 1)
+
+    async def test_diagnostics_are_added_to_poll_data(self) -> None:
+        client = FakeClient(responses=[({}, set())])
+        client.batch_size = 4
+        coordinator = coordinator_module.WeishauptDataUpdateCoordinator(
+            hass=SimpleNamespace(), client=client, scan_interval=30,
+            active_groups=set(),
+        )
+
+        data = await coordinator._async_update_data()
+
+        self.assertEqual(data[coordinator_module.KEY_BATCH_SIZE], {"value_int": 4})
+        duration = data[coordinator_module.KEY_POLL_DURATION]["value_int"]
+        self.assertGreaterEqual(duration, 0)
 
 
 if __name__ == "__main__":
