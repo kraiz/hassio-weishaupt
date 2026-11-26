@@ -250,20 +250,20 @@ class WeishauptSensorEntity(
                 return None
             _, raw_value = extracted
 
-        # Handle common sentinel values that indicate 'not available'
-        # 16-bit: 0x8000 or 0xFFFF, 32-bit: 0x80000000 or 0xFFFFFFFF
-        if value_size == 2 and raw_value in (0x8000, 0xFFFF):
+        # Signed values: convert first, so a valid -1 (0xFFFF) is not mistaken
+        # for a sentinel. The most negative value (0x8000 / 0x80000000) means
+        # 'not available'.
+        if sensor_def.signed and value_size in (2, 4):
+            bits = 8 * value_size
+            if raw_value >= 1 << (bits - 1):
+                raw_value -= 1 << bits
+            if raw_value == -(1 << (bits - 1)):
+                return None
+        # Unsigned sentinels: 16-bit 0xFFFF, 32-bit 0xFFFFFFFF
+        elif (value_size == 2 and raw_value in (0x8000, 0xFFFF)) or (
+            value_size == 4 and raw_value in (0x80000000, 0xFFFFFFFF)
+        ):
             return None
-        if value_size == 4 and raw_value in (0x80000000, 0xFFFFFFFF):
-            return None
-
-        # Handle signed values
-        if sensor_def.signed and value_size == 2:
-            if raw_value > 0x7FFF:
-                raw_value -= 0x10000
-        elif sensor_def.signed and value_size == 4:
-            if raw_value > 0x7FFFFFFF:
-                raw_value -= 0x100000000
 
         if raw_value in sensor_def.none_values:
             return None
