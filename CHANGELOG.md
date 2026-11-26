@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1 - 2026-11-26
+
+- Fix: Signed sensors no longer report a valid -1 (raw `0xFFFF` / `0xFFFFFFFF`) as unavailable. On the outdoor temperature sensor this left gaps in the history graph whenever the outdoor temperature was exactly -0.1 °C. Only the most negative value (`0x8000` / `0x80000000`) is treated as unavailable on signed sensors. Refs #27.
+
 ## 0.4.0 - 2026-11-21
 
 - Feature: Add three cumulative energy sensors for the Energy dashboard: "Wärmemenge gesamt / Heizbetrieb / Warmwasser (kumuliert)" (kWh, `TOTAL_INCREASING`). Each one is built from its daily source ("Tageswärmemenge Vortag"): when the source value changes, the new day's value is added to a running total. The total is restored after restarts. The total starts at 0 at setup, and days when Home Assistant was off are not counted.
